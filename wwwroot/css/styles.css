@@ -1,54 +1,266 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
 body {
     margin: 0;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #164e63 50%, #1e293b 75%, #0f172a 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    min-height: 100vh;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 20px;
+}
+
+.canvas-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(103, 232, 249, 0.2);
+    padding: 12px 8px;
+}
+
+.tool-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tool-section h3 {
+    display: none; /* Hide section titles */
+}
+
+.tool-item {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #a5f3fc;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.tool-item:hover {
+    background: rgba(103, 232, 249, 0.1);
+    color: #67e8f9;
+    transform: scale(1.05);
+}
+
+.tool-item.active {
+    background: rgba(103, 232, 249, 0.2);
+    color: #67e8f9;
+    border-color: rgba(103, 232, 249, 0.3);
+}
+
+.tool-item svg {
+    width: 22px;
+    height: 22px;
+}
+
+.tool-item span {
+    display: none; /* Hide text labels */
+}
+
+/* Tooltip for tools */
+.tool-item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    color: #67e8f9;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    border: 1px solid rgba(103, 232, 249, 0.2);
+}
+
+.tool-item:hover::after {
+    opacity: 1;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
 }
 
 .grid-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid #333;
-    background: white;
+    border: 3px solid #67e8f9;
+    background: linear-gradient(145deg, #f0fdff 0%, #e6fffa 100%);
     padding: 0;
+    box-shadow: 
+        0 25px 50px rgba(103, 232, 249, 0.3),
+        0 10px 20px rgba(103, 232, 249, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    overflow: hidden;
+    position: relative;
+}
+
+.grid-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #67e8f9, #22d3ee, #06b6d4, #0891b2);
+    border-radius: 22px;
+    z-index: -1;
+    animation: borderGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes borderGlow {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(32, 16px);
-    grid-template-rows: repeat(32, 16px);
+    grid-template-columns: repeat(48, 12px);
+    grid-template-rows: repeat(48, 12px);
     gap: 0;
-    width: 512px;
-    height: 512px;
+    width: 576px;
+    height: 576px;
 }
 
 .pixel {
-    width: 16px;
-    height: 16px;
-    background-color: white;
-    border: 1px solid #eee;
+    width: 12px;
+    height: 12px;
+    background-color: transparent;
     cursor: crosshair;
     box-sizing: border-box;
+    transition: all 0.15s ease;
 }
 
 .pixel:hover {
-    background-color: #f0f0f0;
+    background-color: #ecfeff;
+    border-color: #a5f3fc;
+    transform: scale(1.01);
 }
 
 h1 {
     text-align: center;
-    color: #333;
-    margin-bottom: 10px;
+    background: linear-gradient(135deg, #ffffff 0%, #67e8f9 50%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    font-size: 3rem;
+    font-weight: 450;
+    text-shadow: 0 4px 8px rgba(103, 232, 249, 0.3);
+    letter-spacing: -0.05em;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .info {
     text-align: center;
-    margin: 10px 0 20px 0;
-    color: #666;
+    margin: 0;
+    color: #a5f3fc;
+    font-size: 1.1rem;
+    font-weight: 300;
+    opacity: 0.95;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.canvas-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.color-palette {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(103, 232, 249, 0.2);
+    border-radius: 12px;
+    padding: 12px 8px;
+}
+
+.color-option {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid rgba(103, 232, 249, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.color-option::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 10px;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    border-color: rgba(103, 232, 249, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.color-option:hover::before {
+    opacity: 1;
+}
+
+.color-option.active {
+    border-color: #67e8f9;
+    box-shadow: 0 0 0 2px rgba(103, 232, 249, 0.3);
+    transform: scale(1.05);
+}
+
+.color-option[data-color="#ffffff"] {
+    border-color: rgba(103, 232, 249, 0.4);
+}
+
+.color-option[data-color="#ffffff"]:hover {
+    border-color: rgba(103, 232, 249, 0.7);
 }
