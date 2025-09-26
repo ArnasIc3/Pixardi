@@ -54,7 +54,38 @@
                 <div class="color-option" data-color="#ffffff" style="background-color: #ffffff;"></div>
             </div>
         </div>
+        
+        <!-- File operations bar - moved to bottom of canvas -->
+        <div class="file-operations">
+            <button id="clearCanvas" class="file-btn" data-tooltip="Clear Canvas">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+                Clear
+            </button>
+            <button id="importFile" class="file-btn" data-tooltip="Import Pixel Art">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                </svg>
+                Import
+            </button>
+            <button id="exportPNG" class="file-btn" data-tooltip="Export as PNG">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                </svg>
+                PNG
+            </button>
+            <button id="exportJSON" class="file-btn" data-tooltip="Export Project">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M5,3H7V5H5V10A2,2 0 0,1 3,12A2,2 0 0,1 5,14V19H7V21H5C3.93,20.93 3.07,20.07 3,19V15A2,2 0 0,0 1,13H0V11H1A2,2 0 0,0 3,9V5A2,2 0 0,1 5,3M19,3A2,2 0 0,1 21,5V9A2,2 0 0,0 23,11H24V13H23A2,2 0 0,0 21,15V19A2,2 0 0,1 19,21H17V19H19V14A2,2 0 0,1 21,12A2,2 0 0,1 19,10V5H17V3H19M12,15A1,1 0 0,1 13,16A1,1 0 0,1 12,17A1,1 0 0,1 11,16A1,1 0 0,1 12,15Z"/>
+                </svg>
+                Project
+            </button>
+        </div>
     </div>
+    
+    <!-- Hidden file input for importing -->
+    <input type="file" id="fileInput" accept=".json,.pixardi" style="display: none;">
     
     <script src="js/app.js"></script>
 </body>
