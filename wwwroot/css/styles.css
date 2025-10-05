@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+=======
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 body {
@@ -117,12 +123,122 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 16px;
+>>>>>>> main
 }
 
-.grid-container {
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    min-height: 100vh;
+    color: #f8fafc;
+    overflow-x: hidden;
+}
+
+.container {
+    padding: 40px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.main-content {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.main-content h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #67e8f9, #22d3ee, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+}
+
+.main-content p {
+    font-size: 1.2rem;
+    color: #cbd5e1;
+}
+
+/* Canvas Area */
+.canvas-area {
     display: flex;
+    gap: 30px;
     justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+/* Toolbar */
+.toolbar {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(103, 232, 249, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 25px 50px rgba(103, 232, 249, 0.15);
+    min-width: 200px;
+}
+
+.tool-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tool-item {
+    display: flex;
     align-items: center;
+<<<<<<< HEAD
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    color: #a5f3fc;
+    user-select: none;
+}
+
+.tool-item:hover {
+    background: rgba(103, 232, 249, 0.1);
+    border-color: rgba(103, 232, 249, 0.3);
+    transform: translateX(4px);
+}
+
+.tool-item.active {
+    background: linear-gradient(135deg, rgba(103, 232, 249, 0.2), rgba(34, 211, 238, 0.1));
+    border-color: #67e8f9;
+    color: #67e8f9;
+    box-shadow: 0 8px 25px rgba(103, 232, 249, 0.2);
+}
+
+.tool-item svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    filter: brightness(0) invert(1);
+}
+
+/* toolbar icon sizing + force white color for SVG files used via <img> */
+.tool-item .icon {
+    width: 24px;               /* desired icon size */
+    height: 24px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    object-fit: contain;
+    /* Force any dark/colored SVG to render white */
+    filter: brightness(0) saturate(100%) invert(1);
+}
+
+/* Grid Container */
+.grid-container {
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 20px;
+=======
     border: 3px solid #67e8f9;
     background: linear-gradient(145deg, #f0fdff 0%, #e6fffa 100%);
     padding: 0;
@@ -150,10 +266,46 @@ body {
 @keyframes borderGlow {
     0% { opacity: 0.7; }
     100% { opacity: 1; }
+>>>>>>> main
 }
 
 .grid {
     display: grid;
+<<<<<<< HEAD
+    background: #ffffff; /* Pure white canvas background */
+    padding: 0; /* Remove padding for cleaner look */
+    width: fit-content;
+    height: fit-content;
+    margin: 0 auto;
+    border: 2px solid #000000; /* Clean black border around canvas */
+}
+
+.pixel {
+    background: #ffffff; /* Pure white pixels */
+    border: none; /* Remove default border */
+    cursor: crosshair;
+    transition: all 0.1s ease;
+    /* Size will be set dynamically by JavaScript */
+}
+
+.pixel:hover {
+    /* 1px black outline on hover */
+    box-shadow: inset 0 0 0 1px #000000;
+}
+
+/* Color Palette */
+.color-palette {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(103, 232, 249, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 25px 50px rgba(103, 232, 249, 0.15);
+    max-width: 200px;
+=======
     grid-template-columns: repeat(48, 12px);
     grid-template-rows: repeat(48, 12px);
     gap: 0;
@@ -188,10 +340,295 @@ h1 {
     text-shadow: 0 4px 8px rgba(103, 232, 249, 0.3);
     letter-spacing: -0.05em;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+>>>>>>> main
 }
 
-.info {
+.color-option {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    border-color: rgba(103, 232, 249, 0.5);
+}
+
+.color-option.active {
+    border-color: #67e8f9;
+    box-shadow: 0 0 20px rgba(103, 232, 249, 0.4);
+    transform: scale(1.05);
+}
+
+/* Authentication Navigation */
+.auth-nav {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.auth-buttons,
+.user-info {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.auth-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+    background: none;
+    font-family: inherit;
+}
+
+.login-btn {
+    color: #67e8f9;
+    border-color: rgba(103, 232, 249, 0.3);
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+.login-btn:hover {
+    background: rgba(103, 232, 249, 0.1);
+    border-color: rgba(103, 232, 249, 0.5);
+}
+
+.register-btn {
+    background: linear-gradient(135deg, #67e8f9, #22d3ee);
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(103, 232, 249, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .canvas-area {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .main-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .container {
+        padding: 20px 10px;
+    }
+}
+
+
+
+/* Auth (Login / Register) styles */
+.auth-container {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.auth-form {
+    width: 380px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    border: 1px solid rgba(0,0,0,0.25);
+    backdrop-filter: blur(8px);
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(2,6,23,0.6);
+    color: #e6eef6;
+}
+
+.auth-form h2 {
+    margin-bottom: 18px;
+    font-size: 1.6rem;
+    color: #ffffff;
     text-align: center;
+<<<<<<< HEAD
+}
+
+.form-group {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    color: #cbd5e1;
+}
+
+.form-control {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.03);
+    color: #ffffff;
+    outline: none;
+    transition: box-shadow .15s ease, border-color .15s ease;
+    font-size: 0.95rem;
+}
+
+.form-control:focus {
+    box-shadow: 0 6px 18px rgba(103,232,249,0.06);
+    border-color: rgba(103,232,249,0.45);
+}
+
+.text-danger {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: #cbd5e1;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #67e8f9;
+    border-radius: 4px;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    margin-top: 8px;
+}
+
+.login-btn {
+    background: linear-gradient(90deg,#0ea5e9,#7c3aed);
+    color: #fff;
+}
+
+.register-btn {
+    background: linear-gradient(90deg,#34d399,#06b6d4);
+    color: #062023;
+}
+
+/* small helper link */
+.auth-link {
+    margin-top: 12px;
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+}
+
+.auth-link a {
+    color: #67e8f9;
+    text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-form { width: 92%; padding: 20px; }
+}
+
+/* ensure input text is visible */
+.form-control {
+    color: #ffffff;
+}
+
+/* toggle button */
+.password-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    border-radius: 6px;
+}
+.password-toggle:focus {
+    outline: 2px solid rgba(103,232,249,0.3);
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* ensure password input matches other inputs and leaves room for toggle */
+.password-wrapper .form-control {
+    width: 100%;
+    padding-right: 44px; /* room for hidden toggle */
+    box-sizing: border-box;
+}
+
+/* toggle button - hidden by default to avoid overlapping while typing */
+.password-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 6px;
+    border-radius: 6px;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+/* show the toggle only when user intentionally hovers or focuses the input area */
+.password-wrapper:hover .password-toggle,
+.password-wrapper:focus-within .password-toggle {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.password-toggle:focus {
+    outline: 2px solid rgba(103,232,249,0.3);
+}
+
+/* visually-hidden helper for accessible text inside the button */
+.sr-only {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+=======
     margin: 0;
     color: #a5f3fc;
     font-size: 1.1rem;
@@ -263,4 +700,5 @@ h1 {
 
 .color-option[data-color="#ffffff"]:hover {
     border-color: rgba(103, 232, 249, 0.7);
+>>>>>>> main
 }

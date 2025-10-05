@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Pixardi</title>
+
+    <link rel="stylesheet" href="/css/styles.css" />
+
+    <!-- Render additional styles from views -->
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+
+<body>
+    <!-- Authentication Navigation -->
+    <nav class="auth-nav">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="user-info">
+                <span>Welcome, @User.Identity.Name</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="auth-btn logout-btn">Logout</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="auth-buttons">
+                <a asp-controller="Account" asp-action="Login" class="auth-btn login-btn">Login</a>
+                <a asp-controller="Account" asp-action="Register" class="auth-btn register-btn">Register</a>
+            </div>
+        }
+    </nav>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <!-- Scripts at bottom for proper loading -->
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
