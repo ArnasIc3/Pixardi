@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\Pixardi.csproj": {}
+    "c:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\Pixardi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\Pixardi.csproj": {
+    "c:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\Pixardi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\Pixardi.csproj",
+        "projectUniqueName": "c:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\Pixardi.csproj",
         "projectName": "Pixardi",
-        "projectPath": "C:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\Pixardi.csproj",
+        "projectPath": "c:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\Pixardi.csproj",
         "packagesPath": "C:\\Users\\Arnas\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\obj\\",
+        "outputPath": "c:\\Users\\Arnas\\Desktop\\.NET\\Pixardi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
