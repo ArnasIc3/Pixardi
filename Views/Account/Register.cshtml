@@ -8,6 +8,8 @@
         <h2>Create account</h2>
 
         <form asp-action="Register" method="post">
+            @Html.AntiForgeryToken()
+
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <div class="form-group">
@@ -24,27 +26,14 @@
 
             <div class="form-group">
                 <label asp-for="Password"></label>
-                <div class="password-wrapper">
-                    <input asp-for="Password" id="Password" type="password" class="form-control"
-                        placeholder="Password" />
-                    <button type="button" class="password-toggle" data-target="#Password" aria-pressed="false"
-                        aria-label="Toggle password visibility">
-                        <span class="sr-only">Toggle password visibility</span>
-                    </button>
-                </div>
+                <input asp-for="Password" id="Password" type="password" class="form-control" placeholder="Password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="ConfirmPassword"></label>
-                <div class="password-wrapper">
-                    <input asp-for="ConfirmPassword" id="ConfirmPassword" type="password" class="form-control"
-                        placeholder="Confirm password" />
-                    <button type="button" class="password-toggle" data-target="#ConfirmPassword" aria-pressed="false"
-                        aria-label="Toggle confirm password visibility">
-                        <span class="sr-only">Toggle confirm password visibility</span>
-                    </button>
-                </div>
+                <input asp-for="ConfirmPassword" id="ConfirmPassword" type="password" class="form-control"
+                    placeholder="Confirm password" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
 

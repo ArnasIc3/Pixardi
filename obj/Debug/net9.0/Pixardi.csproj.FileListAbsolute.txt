@@ -214,5 +214,6 @@ C:\Users\Arnas\Desktop\.NET\Pixardi\obj\Debug\net9.0\compressed\k3lfl2fgfc-7jhln
 C:\Users\Arnas\Desktop\.NET\Pixardi\obj\Debug\net9.0\compressed\qy4n67kz24-2mari841i4.gz
 C:\Users\Arnas\Desktop\.NET\Pixardi\obj\Debug\net9.0\compressed\nywkp33nqg-4xnl68vk78.gz
 C:\Users\Arnas\Desktop\.NET\Pixardi\obj\Debug\net9.0\compressed\fdou162xtq-knwq3js2yl.gz
-C:\Users\Arnas\Desktop\.NET\Pixardi\obj\Debug\net9.0\compressed\8ecpgrx3in-qb4fznzrva.gz
 C:\Users\Arnas\Desktop\.NET\Pixardi\obj\Debug\net9.0\compressed\l2d73vc1dc-6ak1c231br.gz
+C:\Users\Arnas\Desktop\.NET\Pixardi\obj\Debug\net9.0\compressed\8ecpgrx3in-ukf1w72aqh.gz
+C:\Users\Arnas\Desktop\.NET\Pixardi\obj\Debug\net9.0\compressed\bd6kvvz5wb-5re4by8n1q.gz
