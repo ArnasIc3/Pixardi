@@ -1,0 +1,41 @@
+@model Pixardi.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="auth-container">
+    <div class="auth-form">
+        <h2>Login</h2>
+
+        <form asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" autocomplete="email" placeholder="Email address" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" id="Password" type="password" class="form-control" placeholder="Password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input asp-for="RememberMe" /> <span>Remember me</span>
+                </label>
+            </div>
+
+            <button type="submit" class="auth-btn login-btn">Login</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/auth.js" asp-append-version="true"></script>
+}

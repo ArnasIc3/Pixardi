@@ -1,0 +1,52 @@
+@model Pixardi.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="auth-container">
+    <div class="auth-form">
+        <h2>Create account</h2>
+
+        <form asp-action="Register" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="DisplayName"></label>
+                <input asp-for="DisplayName" class="form-control" placeholder="Display name" />
+                <span asp-validation-for="DisplayName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" autocomplete="email" placeholder="Email address" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" id="Password" type="password" class="form-control" placeholder="Password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword"></label>
+                <input asp-for="ConfirmPassword" id="ConfirmPassword" type="password" class="form-control"
+                    placeholder="Confirm password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="auth-btn register-btn">Register</button>
+        </form>
+
+        <p class="auth-link">
+            Already have an account? <a asp-action="Login">Login here</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/auth.js" asp-append-version="true"></script>
+}

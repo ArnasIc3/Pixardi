@@ -1,0 +1,28 @@
+# Build output
+bin/
+obj/
+**/bin/
+**/obj/
+
+# VS / VS Code
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# ASP.NET static assets caches
+*.staticwebassets.runtime.json
+*.staticwebassets.endpoints.json
+
+# Logs and user files
+*.log
+*.suo
+*.user
+
+# SQLite sidecar files (keep .db, ignore WAL/SHM)
+*.db-wal
+*.db-shm
+
+# Node/LibMan (if used)
+wwwroot/node_modules/
+wwwroot/lib/
