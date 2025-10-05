@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("Pixardi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+75702c887afe6de87be25034b487218f969f2b97")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1972a11df3e10e7d4ebe12b62a6614d2356d1020")]
 [assembly: System.Reflection.AssemblyProductAttribute("Pixardi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Pixardi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,63 +1,80 @@
-using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Pixardi.Data;
+using Pixardi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllersWithViews();
 
-builder.Services.AddOpenApi();
+// Register your EF DbContext
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configure file upload size limits
-builder.Services.Configure<FormOptions>(options =>
+// Register Identity for ApplicationUser (adds UserManager<ApplicationUser>, SignInManager<ApplicationUser>, etc.)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
-    options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB limit
-});
+    options.SignIn.RequireConfirmedAccount = false;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Test database connection
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        // Ensure database is created
+        context.Database.EnsureCreated();
+
+        // Test connection
+        var canConnect = context.Database.CanConnect();
+        Console.WriteLine($"Database connection test: {(canConnect ? "SUCCESS" : "FAILED")}");
+
+        // Show database path
+        var connectionString = context.Database.GetConnectionString();
+        Console.WriteLine($"Database path: {connectionString}");
+
+        // Count users (should be 0 initially)
+        var userCount = context.Users.Count();
+        Console.WriteLine($"Current user count: {userCount}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database error: {ex.Message}");
+    }
 }
 
-// Enable static file serving
-app.UseDefaultFiles();
-app.UseStaticFiles();
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
 
 app.UseHttpsRedirection();
 
-// Add a simple route for our grid
-app.MapGet("/grid", () => Results.Redirect("/index.html"));
-
-// API endpoint for saving artwork to server
-app.MapPost("/api/artwork/save", async (IFormFile file) =>
+// Add debugging middleware
+app.Use(async (context, next) =>
 {
-    if (file == null || file.Length == 0)
-        return Results.BadRequest("No file uploaded");
-
-    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-    Directory.CreateDirectory(uploadsFolder);
-
-    var fileName = $"artwork_{DateTime.Now:yyyyMMdd_HHmmss}_{file.FileName}";
-    var filePath = Path.Combine(uploadsFolder, fileName);
-
-    using (var stream = new FileStream(filePath, FileMode.Create))
-    {
-        await file.CopyToAsync(stream);
-    }
-
-    return Results.Ok(new { fileName, message = "Artwork saved successfully" });
+    Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
+    await next();
+    Console.WriteLine($"Response: {context.Response.StatusCode}");
 });
 
-// API endpoint for loading artwork from server
-app.MapGet("/api/artwork/load/{fileName}", (string fileName) =>
-{
-    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", fileName);
-    
-    if (!File.Exists(filePath))
-        return Results.NotFound("Artwork not found");
+app.UseStaticFiles();
 
-    var content = File.ReadAllText(filePath);
-    return Results.Ok(content);
-});
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
 
 app.Run();
