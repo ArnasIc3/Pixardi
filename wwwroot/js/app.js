@@ -11,6 +11,67 @@ let lastY = null;
 let CANVAS_WIDTH = 48;
 let CANVAS_HEIGHT = 48;
 
+let historyStack = [];
+let currentAction = null;
+const MAX_HISTORY = 100;
+
+function startAction(type) {
+    currentAction = { type, pixels: new Map() }; // Map keyed by "x,y"
+}
+
+function recordPixelChange(x, y, prevColor) {
+    if (!currentAction) return;
+    const key = `${x},${y}`;
+    if (!currentAction.pixels.has(key)) {
+        currentAction.pixels.set(key, { x, y, prevColor });
+    }
+}
+
+function endAction() {
+    if (!currentAction) return;
+    const pixelsArray = Array.from(currentAction.pixels.values());
+    if (pixelsArray.length > 0){
+        historyStack.push({ type: currentAction.type, pixels: pixelsArray}); // use historyStack
+        if (historyStack.length > MAX_HISTORY) historyStack.shift();
+    }
+    currentAction = null;
+}
+
+function undo() {
+    if (historyStack.length === 0) {
+        console.log('Nothing to undo.');
+        return;
+    }
+    const action = historyStack.pop();
+    action.pixels.forEach(p => {
+        const pixel = document.querySelector(`[data-x="${p.x}"][data-y="${p.y}"]`);
+        if (pixel) {
+            pixel.style.backgroundColor = p.prevColor || '';
+        }
+    });
+    console.log(`Undid action: ${action.type} (${action.pixels.length} pixels)`);
+}
+
+function clearCanvas() {
+    // start a named action so user can undo the clear
+    startAction('clear');
+
+    const pixels = Array.from(document.querySelectorAll('.pixel'));
+    pixels.forEach(pixel => {
+        const x = parseInt(pixel.dataset.x);
+        const y = parseInt(pixel.dataset.y);
+        const prev = pixel.style.backgroundColor || '';
+        // record the previous color
+        recordPixelChange(x, y, prev);
+        // clear the pixel (remove inline color)
+        pixel.style.backgroundColor = '';
+    });
+
+    endAction();
+    console.log(`Canvas cleared (${pixels.length} pixels).`);
+}
+
+
 // Calculate optimal pixel size based on canvas dimensions
 function getOptimalPixelSize() {
     const maxCanvasSize = 600; // Maximum canvas size in pixels
@@ -25,11 +86,62 @@ function getOptimalPixelSize() {
 }
 
 function updateCanvasSize(width, height) {
+    width = Math.max(1, Math.floor(width));
+    height = Math.max(1, Math.floor(height));
+
+    const grid = document.getElementById('pixelGrid');
+    const container = document.querySelector('.grid-container') || document.body;
+    if (!grid) {
+        CANVAS_WIDTH = width;
+        CANVAS_HEIGHT = height;
+        return;
+    }
+
+    // recreate DOM cells if dimensions changed
+    if (CANVAS_WIDTH !== width || CANVAS_HEIGHT !== height || grid.children.length !== width * height) {
+        CANVAS_WIDTH = width;
+        CANVAS_HEIGHT = height;
+        grid.innerHTML = '';
+        createGrid(); // assumes createGrid uses CANVAS_WIDTH / CANVAS_HEIGHT
+    }
+
+    // compute available space inside container (use most of it)
+    const containerRect = container.getBoundingClientRect();
+    const availableWidth = Math.max(200, containerRect.width - 16); // small margin
+    const availableHeight = Math.max(200, window.innerHeight - containerRect.top - 24);
+
+    // compute pixel size so grid fits; allow much larger max so bigger grids render larger
+    let pixelSize = Math.floor(Math.min(availableWidth / width, availableHeight / height));
+
+    // clamp to sensible bounds but allow a large max so 56x32 can be big
+    pixelSize = Math.max(6, Math.min(pixelSize, 80)); // increased max from 40 -> 80
+
+    // ensure minimum visually-usable size on large screens
+    if (window.innerWidth > 1400) {
+        pixelSize = Math.max(pixelSize, 10);
+    }
+
+    // apply CSS var and explicit grid sizing
+    grid.style.setProperty('--pixel-size', `${pixelSize}px`);
+    grid.style.gridTemplateColumns = `repeat(${width}, ${pixelSize}px)`;
+    grid.style.width = `${width * pixelSize}px`;
+    grid.style.height = `${height * pixelSize}px`;
+    grid.style.maxWidth = 'none';
+
+    // update each pixel element size (in case createGrid created them without var)
+    document.querySelectorAll('#pixelGrid .pixel').forEach(p => {
+        p.style.width = `${pixelSize}px`;
+        p.style.height = `${pixelSize}px`;
+    });
+
     CANVAS_WIDTH = width;
     CANVAS_HEIGHT = height;
-    console.log(`Canvas size updated to: ${CANVAS_WIDTH}x${CANVAS_HEIGHT}`);
-    createGrid();
 }
+
+// recompute on resize so pixel size increases when the window is larger
+window.addEventListener('resize', () => {
+    updateCanvasSize(CANVAS_WIDTH, CANVAS_HEIGHT);
+});
 
 function createGrid() {
     console.log(`Creating ${CANVAS_WIDTH}x${CANVAS_HEIGHT} grid...`);
@@ -158,18 +270,25 @@ function drawLine(x0, y0, x1, y1) {
 
 function paintPixelAt(x, y) {
     const pixel = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
-    if (pixel) pixel.style.backgroundColor = currentColor;
+    if (!pixel) return;
+    const prev = pixel.style.backgroundColor || '';
+    recordPixelChange(x, y, prev);
+    pixel.style.backgroundColor = currentColor;
 }
 
 function erasePixelAt(x, y) {
-    const pixel = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
-    if (pixel) pixel.style.backgroundColor = '#ffffffff';
+    const pixel = document.querySelector(`[data-x="${x}"][data-y="${y}"]`); 
+    if (!pixel) return;
+    const prev = pixel.style.backgroundColor || '';
+    recordPixelChange(x, y, prev);
+    pixel.style.backgroundColor = '#ffffffff';
 }
 
 function floodFill(startX, startY, targetColor, fillColor) {
     if (targetColor === fillColor) return;
     const stack = [[startX, startY]];
     const visited = new Set();
+    const changed = [];
 
     while (stack.length > 0) {
         const [x, y] = stack.pop();
@@ -183,8 +302,15 @@ function floodFill(startX, startY, targetColor, fillColor) {
         const currentPixelColor = pixel.style.backgroundColor || '#ffffffff';
         if (currentPixelColor !== targetColor) continue;
 
+        // record previous color and change
+        changed.push({ x, y, prevColor: currentPixelColor });
         pixel.style.backgroundColor = fillColor;
         stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+    }
+
+    if (changed.length > 0) {
+        historyStack.push({ type: 'fill', pixels: changed });
+        if (historyStack.length > MAX_HISTORY) historyStack.shift();
     }
 }
 
@@ -204,6 +330,7 @@ function pixelVirus(startX, startY) {
     const startColor = normalizeColor(startPixel?.style.backgroundColor || '');
     if (startColor === '#000000') {
         console.log('Start pixel is black — virus aborted.');
+        endAction(); // ensure action is closed when aborted
         return;
     }
 
@@ -214,10 +341,12 @@ function pixelVirus(startX, startY) {
     function step() {
         if (frontier.length === 0) {
             console.log('Virus finished - no more frontier.');
+            endAction();
             return;
         }
         if (generation >= maxGenerations) {
             console.log('Virus stopped - reached maxGenerations.');
+            endAction();
             return;
         }
 
@@ -260,7 +389,10 @@ function pixelVirus(startX, startY) {
         generation++;
         frontier = nextFrontier;
         if (frontier.length > 0) setTimeout(step, spreadDelay);
-        else console.log('Virus finished (no new infections).');
+        else {
+            console.log('Virus finished (no new infections).');
+            endAction();
+        }
     }
 
     // start iterative spread
@@ -284,7 +416,10 @@ function normalizeColor(color) {
 // Helper function to paint with specific color
 function paintPixelAtWithColor(x, y, color) {
     const pixel = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
-    if (pixel) pixel.style.backgroundColor = color || currentColor;
+    if (!pixel) return;
+    const prev = pixel.style.backgroundColor || '';
+    recordPixelChange(x, y, prev);
+    pixel.style.backgroundColor = color || currentColor;
 }
 
 function getNeighbors(x, y) {
@@ -310,13 +445,16 @@ function handleMouseDown(e) {
     const y = parseInt(e.target.dataset.y);
 
     if (currentTool === 'fill') {
+        startAction('fill');
         const pixel = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
         const targetColor = pixel.style.backgroundColor || '#334155';
         floodFill(x, y, targetColor, currentColor);
+        endAction();
         return;
     }
 
     if (currentTool === 'virus') {
+        startAction('virus');
         pixelVirus(x, y);
         return;
     }
@@ -325,9 +463,10 @@ function handleMouseDown(e) {
     lastY = y;
 
     if (e.button === 0) {
-        if (currentTool === 'brush') { isDrawing = true; paintPixelAt(x, y); }
-        else if (currentTool === 'eraser') { isErasing = true; erasePixelAt(x, y); }
+        if (currentTool === 'brush') { startAction('stroke'); isDrawing = true; paintPixelAt(x, y); }
+        else if (currentTool === 'eraser') { startAction('erase'); isErasing = true; erasePixelAt(x, y); }
     } else if (e.button === 2) {
+        startAction('erase');
         isErasing = true;
         erasePixelAt(x, y);
     }
@@ -339,6 +478,7 @@ function stopDrawingOrErasing() {
         isErasing = false;
         lastX = null;
         lastY = null;
+        endAction();
     }
 }
 
@@ -350,6 +490,30 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('DOM loaded, creating grid...');
         createGrid();
         gridInitialized = true;
+    }
+
+    // Ctrl+Z / Cmd+Z undo
+    document.addEventListener('keydown', (ev) => {
+        if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') {
+            ev.preventDefault();
+            undo();
+        }
+    });
+
+    const undoBtn = document.getElementById('undoBtn');
+    if (undoBtn) {
+        undoBtn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            undo();
+        });
+    }
+
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            clearCanvas();
+        });
     }
 });
 
