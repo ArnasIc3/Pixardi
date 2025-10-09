@@ -5,56 +5,73 @@
 <h1 class="brand-title">Pixardi</h1>
 
 <div class="container">
-    <div class="canvas-area">
-        <div class="toolbar">
-            <div class="tool-section">
+    <div class="canvas-layout">
+        <!-- Left sidebar: tools + action buttons -->
+        <aside class="sidebar">
+            <div class="toolbar">
+                <div class="tool-section">
+                    <div class="tool-item active" data-tool="brush">
+                        <img src="@Url.Content(contentPath: "~/icons/brush.svg")" alt="Brush" class="icon" width="20"
+                            height="20" />
+                        <span>Brush</span>
+                    </div>
 
-                <div class="tool-item active" data-tool="brush">
-                    <img src="@Url.Content(contentPath: "~/icons/brush.svg")" alt="Brush" class="icon" width="20"
-                        height="20" />
-                    <span>Brush</span>
+                    <div class="tool-item" data-tool="eraser">
+                        <img src="@Url.Content(contentPath: "~/icons/eraser.svg")" alt="Eraser" class="icon" width="20"
+                            height="30" />
+                        <span>Eraser</span>
+                    </div>
+
+                    <div class="tool-item" data-tool="fill">
+                        <img src="@Url.Content(contentPath: "~/icons/fill-bucket.svg")" alt="Fill" class="icon"
+                            width="20" height="20" />
+                        <span>Fill</span>
+                    </div>
+
+                    <div class="tool-item" data-tool="virus">
+                        <img src="@Url.Content(contentPath: "~/icons/virus.svg")" alt="Virus" class="icon" width="20"
+                            height="20" />
+                        <span>Virus</span>
+                    </div>
                 </div>
 
-                <div class="tool-item" data-tool="eraser">
-                    <img src="@Url.Content(contentPath: "~/icons/eraser.svg")" alt="Eraser" class="icon" width="20"
-                        height="30" />
-                    <span>Eraser</span>
+                <div class="tool-section">
+                    <div class="color-palette palette-in-toolbar">
+                        <div class="color-option active" data-color="#000000" style="background-color: #000000;"></div>
+                        <div class="color-option" data-color="#ff6b6b" style="background-color: #ff6b6b;"></div>
+                        <div class="color-option" data-color="#4ecdc4" style="background-color: #4ecdc4;"></div>
+                        <div class="color-option" data-color="#45b7d1" style="background-color: #45b7d1;"></div>
+                        <div class="color-option" data-color="#96ceb4" style="background-color: #96ceb4;"></div>
+                        <div class="color-option" data-color="#ffeaa7" style="background-color: #ffeaa7;"></div>
+                        <div class="color-option" data-color="#fd79a8" style="background-color: #fd79a8;"></div>
+                        <div class="color-option" data-color="#e17055" style="background-color: #e17055;"></div>
+                        <div class="color-option" data-color="#a29bfe" style="background-color: #a29bfe;"></div>
+                        <div class="color-option" data-color="#ffffff" style="background-color: #ffffff;"></div>
+                    </div>
                 </div>
-
-                <div class="tool-item" data-tool="fill">
-                    <img src="@Url.Content(contentPath: "~/icons/fill-bucket.svg")" alt="Fill" class="icon" width="20"
-                        height="20" />
-                    <span>Fill</span>
-                </div>
-
-                <div class="tool-item" data-tool="virus">
-                    <img src="@Url.Content(contentPath: "~/icons/virus.svg")" alt="Virus" class="icon" width="20"
-                        height="20" />
-                    <span>Virus</span>
-                </div>
-
             </div>
 
-            <!-- Merged color palette into the left toolbar -->
-            <div class="tool-section">
-                <div class="color-palette palette-in-toolbar">
-                    <div class="color-option active" data-color="#000000" style="background-color: #000000;"></div>
-                    <div class="color-option" data-color="#ff6b6b" style="background-color: #ff6b6b;"></div>
-                    <div class="color-option" data-color="#4ecdc4" style="background-color: #4ecdc4;"></div>
-                    <div class="color-option" data-color="#45b7d1" style="background-color: #45b7d1;"></div>
-                    <div class="color-option" data-color="#96ceb4" style="background-color: #96ceb4;"></div>
-                    <div class="color-option" data-color="#ffeaa7" style="background-color: #ffeaa7;"></div>
-                    <div class="color-option" data-color="#fd79a8" style="background-color: #fd79a8;"></div>
-                    <div class="color-option" data-color="#e17055" style="background-color: #e17055;"></div>
-                    <div class="color-option" data-color="#a29bfe" style="background-color: #a29bfe;"></div>
-                    <div class="color-option" data-color="#ffffff" style="background-color: #ffffff;"></div>
-                </div>
+            <!-- action buttons placed under toolbar -->
+            <div class="action-row">
+                <button id="undoBtn" type="button" class="action-button undoBtn" title="Undo"
+                    aria-label="Undo (Ctrl+Z)">
+                    <img src="@Url.Content(contentPath: "~/icons/undo.svg")" alt="Undo" class="icon" width="20"
+                        height="20" />
+                </button>
+                <button id="clearBtn" type="button" class="action-button" title="Clear Canvas"
+                    aria-label="Clear Canvas">
+                    <img src="@Url.Content(contentPath: "~/icons/clear.svg")" alt="Clear" class="icon" width="20"
+                        height="20" />
+                </button>
             </div>
-        </div>
+        </aside>
 
-        <div class="grid-container">
-            <div id="pixelGrid" class="grid"></div>
-        </div>
+        <!-- Right: canvas / grid -->
+        <main class="canvas-area">
+            <div class="grid-container">
+                <div id="pixelGrid" class="grid"></div>
+            </div>
+        </main>
     </div>
 </div>
 
