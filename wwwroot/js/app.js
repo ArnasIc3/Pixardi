@@ -485,6 +485,86 @@ function stopDrawingOrErasing() {
 // Initialize only once when DOM is loaded
 let gridInitialized = false;
 
+function createCursorPreview() {
+    if (document.getElementById('cursorPreview')) return document.getElementById('cursorPreview');
+    const preview = document.createElement('div');
+    preview.id = 'cursorPreview';
+    // ensure borders are included in size calculations
+    preview.style.boxSizing = 'border-box';
+    document.body.appendChild(preview);
+    return preview;
+}
+
+function getPixelSizeFromGrid() {
+    const grid = document.getElementById('pixelGrid');
+    if (!grid) return parseInt(getComputedStyle(document.documentElement).getPropertyValue('--pixel-size')) || 12;
+    const cssVal = getComputedStyle(grid).getPropertyValue('--pixel-size').trim();
+    if (cssVal) return parseInt(cssVal);
+    // fallback: measure first pixel
+    const first = grid.querySelector('.pixel');
+    return first ? Math.max(4, Math.round(first.getBoundingClientRect().width)) : 12;
+}
+
+function attachCursorPreviewHandlers() {
+    const grid = document.getElementById('pixelGrid');
+    if (!grid) return;
+    const preview = createCursorPreview();
+
+    function onMove(ev) {
+        const rect = grid.getBoundingClientRect();
+        const pixelSize = getPixelSizeFromGrid();
+
+        // account for grid border/padding: clientLeft/clientTop offset inside rect
+        const offsetLeft = rect.left + grid.clientLeft;
+        const offsetTop = rect.top + grid.clientTop;
+
+        const cx = ev.clientX;
+        const cy = ev.clientY;
+        if (cx < offsetLeft || cx >= offsetLeft + CANVAS_WIDTH * pixelSize ||
+            cy < offsetTop || cy >= offsetTop + CANVAS_HEIGHT * pixelSize) {
+            preview.style.display = 'none';
+            return;
+        }
+
+        preview.style.display = 'block';
+
+        const x = Math.floor((cx - offsetLeft) / pixelSize);
+        const y = Math.floor((cy - offsetTop) / pixelSize);
+
+        const centerX = offsetLeft + x * pixelSize + pixelSize / 2;
+        const centerY = offsetTop + y * pixelSize + pixelSize / 2;
+
+        preview.style.left = `${centerX}px`;
+        preview.style.top = `${centerY}px`;
+        preview.style.width = `${pixelSize}px`;
+        preview.style.height = `${pixelSize}px`;
+
+        // update styling per tool
+        if (currentTool === 'eraser') {
+            preview.classList.remove('brush');
+            preview.classList.add('eraser');
+            preview.style.background = 'transparent';
+            preview.style.border = '2px dashed rgba(255,255,255,0.9)';
+        } else {
+            preview.classList.remove('eraser');
+            preview.classList.add('brush');
+            preview.style.background = currentColor || '#000';
+            preview.style.border = '2px solid rgba(255,255,255,0.85)';
+        }
+    }
+
+    grid.addEventListener('mousemove', onMove);
+    grid.addEventListener('mouseenter', () => preview.style.display = 'block');
+    grid.addEventListener('mouseleave', () => preview.style.display = 'none');
+    grid.addEventListener('mousedown', () => preview.classList.add('active'));
+    document.addEventListener('mouseup', () => preview.classList.remove('active'));
+    window.addEventListener('resize', () => {
+        const pixelSize = getPixelSizeFromGrid();
+        preview.style.width = `${pixelSize}px`;
+        preview.style.height = `${pixelSize}px`;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     if (!gridInitialized) {
         console.log('DOM loaded, creating grid...');
@@ -515,7 +595,13 @@ document.addEventListener('DOMContentLoaded', () => {
             clearCanvas();
         });
     }
+
+    attachCursorPreviewHandlers();
 });
+
+
+
+
 
 // Global function to change canvas size (for testing)
 window.changeCanvasSize = updateCanvasSize;
