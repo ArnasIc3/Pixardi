@@ -11,26 +11,24 @@
             <div class="toolbar">
                 <div class="tool-section">
                     <div class="tool-item active" data-tool="brush">
-                        <img src="@Url.Content(contentPath: "~/icons/brush.svg")" alt="Brush" class="icon" width="20"
-                            height="20" />
+                        <img src="@Url.Content("~/icons/brush.svg")" alt="Brush" class="icon" width="20" height="20" />
                         <span>Brush</span>
                     </div>
 
                     <div class="tool-item" data-tool="eraser">
-                        <img src="@Url.Content(contentPath: "~/icons/eraser.svg")" alt="Eraser" class="icon" width="20"
-                            height="30" />
+                        <img src="@Url.Content("~/icons/eraser.svg")" alt="Eraser" class="icon" width="20"
+                            height="20" />
                         <span>Eraser</span>
                     </div>
 
                     <div class="tool-item" data-tool="fill">
-                        <img src="@Url.Content(contentPath: "~/icons/fill-bucket.svg")" alt="Fill" class="icon"
-                            width="20" height="20" />
+                        <img src="@Url.Content("~/icons/fill-bucket.svg")" alt="Fill" class="icon" width="20"
+                            height="20" />
                         <span>Fill</span>
                     </div>
 
                     <div class="tool-item" data-tool="virus">
-                        <img src="@Url.Content(contentPath: "~/icons/virus.svg")" alt="Virus" class="icon" width="20"
-                            height="20" />
+                        <img src="@Url.Content("~/icons/virus.svg")" alt="Virus" class="icon" width="20" height="20" />
                         <span>Virus</span>
                     </div>
                 </div>
@@ -55,13 +53,11 @@
             <div class="action-row">
                 <button id="undoBtn" type="button" class="action-button undoBtn" title="Undo"
                     aria-label="Undo (Ctrl+Z)">
-                    <img src="@Url.Content(contentPath: "~/icons/undo.svg")" alt="Undo" class="icon" width="20"
-                        height="20" />
+                    <img src="@Url.Content("~/icons/undo.svg")" alt="Undo" class="icon" width="20" height="20" />
                 </button>
                 <button id="clearBtn" type="button" class="action-button" title="Clear Canvas"
                     aria-label="Clear Canvas">
-                    <img src="@Url.Content(contentPath: "~/icons/clear.svg")" alt="Clear" class="icon" width="20"
-                        height="20" />
+                    <img src="@Url.Content("~/icons/clear.svg")" alt="Clear" class="icon" width="20" height="20" />
                 </button>
             </div>
         </aside>
@@ -69,12 +65,13 @@
         <!-- Right: canvas / grid -->
         <main class="canvas-area">
             <div class="grid-container">
-                <div id="pixelGrid" class="grid"></div>
+                <!-- pixel grid expected by grid.js -->
+                <div id="pixelGrid" class="grid" role="application" aria-label="Pixel canvas"></div>
             </div>
         </main>
     </div>
 </div>
 
 @section Scripts {
-    <script src="~/js/app.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/main.js" asp-append-version="true"></script>
 }
