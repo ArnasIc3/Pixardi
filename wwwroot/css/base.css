@@ -1,0 +1,86 @@
+/* Global reset and base styles */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+/* CSS Custom Properties - Global theme variables */
+:root {
+    --bg-dark-1: #1a0f2e;   /* deep purple */
+    --bg-dark-2: #2d1b4e;   /* plum */
+    --bg-dark-3: #4c1d95;   /* violet */
+    --primary-300: #c4b5fd; /* text subtle */
+    --primary-400: #a78bfa; /* accents */
+    --primary-500: #a855f7; /* primary */
+    --primary-600: #8b5cf6; /* borders hover */
+    --panel-dark: rgba(26, 15, 46, 0.9);
+    --panel-border: rgba(168, 85, 247, 0.25);
+    --text: #f8f7ff;
+    --sidebar-width: 190px; /* match existing sidebar width */
+    --pixel-size: 12px;     /* default pixel size, overridden by JS */
+}
+
+/* Base HTML and body styles */
+html {
+    height: 100%;
+    background: linear-gradient(135deg, var(--bg-dark-1) 0%, var(--bg-dark-2) 25%, var(--bg-dark-3) 50%, var(--bg-dark-2) 75%, var(--bg-dark-1) 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 10s ease-in-out infinite;
+    background-attachment: fixed; /* reduces white flash on scroll */
+    background-color: var(--bg-dark-1); /* fallback */
+    overscroll-behavior: contain; /* avoid bounce revealing white */
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: transparent; /* gradient handled by html to cover full page */
+    min-height: 100vh;
+    min-height: 100svh; /* better mobile handling */
+    color: var(--text);
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overscroll-behavior: contain;
+}
+
+/* Global animations */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Base container */
+.container {
+    padding: 40px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Brand title fixed on top-left, out of normal flow */
+.brand-title {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    margin: 0;
+    z-index: 1000;
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff, var(--primary-500), var(--primary-600));
+    -webkit-background-clip: text; 
+    background-clip: text; 
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 6px 18px rgba(168, 85, 247, 0.25);
+}
+
+/* Visually-hidden helper for accessible text */
+.sr-only {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+}

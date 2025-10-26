@@ -5,7 +5,9 @@
 
 <div class="auth-container">
     <div class="auth-form">
-        <h2>Login</h2>
+        <div class="auth-header">
+            <h2>Login</h2>
+        </div>
 
         <form asp-action="Login" method="post">
             @Html.AntiForgeryToken()
@@ -32,6 +34,21 @@
 
             <button type="submit" class="auth-btn login-btn">Login</button>
         </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="@Url.Action("Register", "Account")" class="auth-link">Register here</a>
+            </p>
+
+            <!-- Back button moved to bottom -->
+            <div class="back-button-container">
+                <a href="@Url.Action("Index", "Home")" class="back-btn" title="Back to Pixardi">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Back to Pixardi
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 

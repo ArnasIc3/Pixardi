@@ -1,7 +1,7 @@
-// Drawing primitives moved from app.js — exports drawing helpers used by main.js
+// Basic drawing primitives and mouse event coordination - pixel-level operations
 
 import { queryPixel, getGridElement } from './grid.js';
-import { getCanvasSize, getCurrentColor } from './state.js';
+import { getCanvasSize, getCurrentColor, getCurrentTool } from './state.js';
 import { startAction, recordPixelChange, endAction } from './history.js';
 
 /**
@@ -98,118 +98,118 @@ export function drawLine(x0, y0, x1, y1, color) {
     }
 }
 
+
+
 /**
- * Flood fill starting at (startX,startY). Records a single action so it can be undone.
- * targetColor should be the color (string) to replace; fillColor is the new color.
+ * Attach drawing event handlers to the grid for mouse interactions.
+ * This enables drawing, erasing, filling, and virus tools.
  */
-export function floodFill(startX, startY, targetColor, fillColor) {
-    const grid = getGridElement();
-    if (!grid) return;
-    targetColor = normalizeColor(targetColor || '');
-    fillColor = fillColor || getCurrentColor() || '#000000';
-    const fillNorm = normalizeColor(fillColor);
+export function attachDrawingHandlers() {
+    let isDrawing = false;
+    let lastX = null, lastY = null;
 
-    if (targetColor === fillNorm) return;
-
-    startAction('fill');
-    const stack = [[startX, startY]];
-    const visited = new Set();
-
-    while (stack.length > 0) {
-        const [x, y] = stack.pop();
-        const key = `${x},${y}`;
-        if (visited.has(key)) continue;
-        visited.add(key);
-
-        const el = queryPixel(x, y);
-        if (!el) continue;
-        const currentNorm = normalizeColor(el.style.backgroundColor || '');
-        if (currentNorm !== targetColor) continue;
-
-        // record previous and apply fill
-        recordPixelChange(x, y, el.style.backgroundColor || '');
-        el.style.backgroundColor = fillColor;
-
-        // push neighbors
-        const neigh = getNeighbors(x, y);
-        for (let i = 0; i < neigh.length; i++) {
-            stack.push(neigh[i]);
-        }
+    function isInBounds(x, y) {
+        const { width, height } = getCanvasSize();
+        return x >= 0 && x < width && y >= 0 && y < height;
     }
 
-    endAction();
+    const grid = getGridElement();
+    if (!grid) {
+        console.warn('Grid element not found, cannot attach drawing handlers');
+        return;
+    }
+
+    // Prevent default drag behavior that causes the "no drop" cursor
+    grid.addEventListener('dragstart', (e) => e.preventDefault());
+    grid.addEventListener('dragover', (e) => e.preventDefault());
+    grid.addEventListener('drop', (e) => e.preventDefault());
+
+    grid.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Prevent text selection and drag
+        if (e.button !== 0) return; // only left mouse button
+        
+        const x = parseInt(e.target.dataset.x, 10);
+        const y = parseInt(e.target.dataset.y, 10);
+        if (!isInBounds(x, y)) return;
+
+        lastX = x;
+        lastY = y;
+        isDrawing = true;
+
+        const tool = getCurrentTool();
+        if (tool === 'brush') {
+            startAction('stroke');
+            paintPixelAt(x, y);
+        } else if (tool === 'eraser') {
+            startAction('erase');
+            erasePixelAt(x, y);
+        } else if (tool === 'fill') {
+            // Use dynamic import for tool functions to avoid circular dependencies
+            import('./tools.js').then(toolsModule => {
+                const pixel = e.target;
+                const targetColor = pixel.style.backgroundColor || '';
+                toolsModule.floodFill(x, y, targetColor, getCurrentColor());
+            }).catch(err => console.error('Error loading tools module:', err));
+        } else if (tool === 'virus') {
+            // Use dynamic import for tool functions to avoid circular dependencies
+            import('./tools.js').then(toolsModule => {
+                toolsModule.pixelVirus(x, y, { color: getCurrentColor() });
+            }).catch(err => console.error('Error loading tools module:', err));
+        }
+    });
+
+    grid.addEventListener('mousemove', (e) => {
+        if (!isDrawing) return;
+        e.preventDefault();
+        
+        const x = parseInt(e.target.dataset.x, 10);
+        const y = parseInt(e.target.dataset.y, 10);
+        if (!isInBounds(x, y)) return;
+
+        const tool = getCurrentTool();
+        if ((tool === 'brush' || tool === 'eraser') && lastX !== null && lastY !== null) {
+            if (tool === 'brush') {
+                drawLine(lastX, lastY, x, y, getCurrentColor());
+            } else {
+                // For eraser, we need to erase each pixel in the line
+                drawEraseLine(lastX, lastY, x, y);
+            }
+            lastX = x;
+            lastY = y;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDrawing) {
+            isDrawing = false;
+            lastX = null;
+            lastY = null;
+            endAction();
+        }
+    });
+
+    console.log('Drawing handlers attached successfully');
 }
 
 /**
- * Pixel virus: spreads from start pixel outward probabilistically.
- * Records a single action so the entire run is undoable.
+ * Draw an erase line between two points
  */
-export function pixelVirus(startX, startY, opts = {}) {
-    const grid = getGridElement();
-    if (!grid) return;
-    const infectionRate = typeof opts.infectionRate === 'number' ? opts.infectionRate : 0.4;
-    const spreadDelay = typeof opts.spreadDelay === 'number' ? opts.spreadDelay : 60;
-    const maxGenerations = typeof opts.maxGenerations === 'number' ? opts.maxGenerations : 12;
+function drawEraseLine(x0, y0, x1, y1) {
+    x0 = Math.floor(x0); y0 = Math.floor(y0); x1 = Math.floor(x1); y1 = Math.floor(y1);
 
-    const infectionColor = normalizeColor(opts.color || getCurrentColor() || '#000000');
+    const dx = Math.abs(x1 - x0);
+    const dy = Math.abs(y1 - y0);
+    const sx = x0 < x1 ? 1 : -1;
+    const sy = y0 < y1 ? 1 : -1;
+    let err = dx - dy;
 
-    // guard: don't run on walls (black) if black is considered barrier
-    const startEl = queryPixel(startX, startY);
-    const startColor = normalizeColor(startEl?.style.backgroundColor || '');
-    if (startColor === '#000000') return;
-
-    startAction('virus');
-
-    // infect start
-    paintPixelAtWithColor(startX, startY, infectionColor);
-    const visited = new Set([`${startX},${startY}`]);
-    let frontier = [[startX, startY]];
-    let generation = 0;
-
-    function step() {
-        if (frontier.length === 0 || generation >= maxGenerations) {
-            endAction();
-            return;
-        }
-
-        const next = [];
-        frontier.forEach(([x, y]) => {
-            const neigh = getNeighbors(x, y);
-            neigh.forEach(([nx, ny]) => {
-                const key = `${nx},${ny}`;
-                if (visited.has(key)) return;
-
-                const el = queryPixel(nx, ny);
-                if (!el) {
-                    visited.add(key);
-                    return;
-                }
-
-                const nColor = normalizeColor(el.style.backgroundColor || '');
-                if (nColor === '#000000') {
-                    visited.add(key);
-                    return;
-                }
-                if (nColor === infectionColor) {
-                    visited.add(key);
-                    return;
-                }
-
-                if (Math.random() < infectionRate) {
-                    visited.add(key);
-                    paintPixelAtWithColor(nx, ny, infectionColor);
-                    next.push([nx, ny]);
-                }
-            });
-        });
-
-        generation++;
-        frontier = next;
-        if (frontier.length > 0) setTimeout(step, spreadDelay);
-        else endAction();
+    while (true) {
+        erasePixelAt(x0, y0);
+        if (x0 === x1 && y0 === y1) break;
+        const e2 = 2 * err;
+        if (e2 > -dy) { err -= dy; x0 += sx; }
+        if (e2 < dx) { err += dx; y0 += sy; }
     }
-
-    setTimeout(step, spreadDelay);
 }
 
 export default {
@@ -217,8 +217,7 @@ export default {
     paintPixelAt,
     erasePixelAt,
     paintPixelAtWithColor,
-    floodFill,
-    pixelVirus,
     normalizeColor,
-    getNeighbors
+    getNeighbors,
+    attachDrawingHandlers
 };

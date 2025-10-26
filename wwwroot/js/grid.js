@@ -1,4 +1,3 @@
-// It expects a state module that exposes getCanvasSize() and setCanvasSize().
 import { getCanvasSize, setCanvasSize } from './state.js';
 
 /**

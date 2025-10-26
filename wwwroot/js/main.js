@@ -5,6 +5,7 @@ import { createGrid, updateCanvasSize } from './grid.js';
 import { initToolbar } from './tools.js';
 import { attachCursorPreviewHandlers } from './cursor.js';
 import { bindHistoryKeys } from './history.js';
+import { attachDrawingHandlers } from './drawing.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Ensure DOM areas exist (Index.cshtml should include required markup)
@@ -28,13 +29,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5) Bind global undo shortcut (Ctrl+Z / Cmd+Z)
     bindHistoryKeys();
 
+    // 6) Attach drawing event handlers to enable mouse drawing
+    attachDrawingHandlers();
+
     // Expose helper to change canvas size from console or other UI code
     window.changeCanvasSize = (w, h) => {
         setCanvasSize(w, h);
+        createGrid();
         updateCanvasSize(w, h);
+        // Re-attach handlers after recreating the grid
+        attachDrawingHandlers();
+        attachCursorPreviewHandlers({
+            getCurrentTool: getCurrentTool,
+            getCurrentColor: getCurrentColor,
+            getCanvasSize: getCanvasSize
+        });
     };
+    
+    // Project controls if user is authenticated
+    const isAuthenticated = document.getElementById('saveProjectBtn') !== null;
+    if (isAuthenticated) {
+        import('./projects.js').then(module => {
+            module.initProjectControls();
+        });
+    }
 
-    // small debug helpers (optional)
+    // small debug helpers
     window.appState = {
         getCanvasSize,
         setCanvasSize,

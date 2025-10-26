@@ -6,7 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Pixardi</title>
 
-    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <!-- Favicon -->
+    <link rel="icon" href="~/logo.png" type="image/png">
+    <link rel="shortcut icon" href="~/logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="~/logo.png">
+
+
+    <!-- Modular CSS files -->
+    <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/tools.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/cursor.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/responsive.css" asp-append-version="true" />
 
     <!-- Render additional styles from views -->
     @await RenderSectionAsync("Styles", required: false)

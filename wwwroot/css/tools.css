@@ -1,0 +1,115 @@
+/* Toolbar - matching original structure */
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    background: var(--panel-dark);
+    border-radius: 12px;
+    border: 1px solid var(--panel-border);
+}
+
+.tool-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tool-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    color: var(--primary-300);
+    user-select: none;
+}
+
+.tool-item:hover {
+    background: rgba(168, 85, 247, 0.12);
+    border-color: rgba(168, 85, 247, 0.35);
+    transform: translateX(4px);
+}
+
+.tool-item.active {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(139, 92, 246, 0.15));
+    border-color: var(--primary-500);
+    color: var(--primary-500);
+    box-shadow: 0 8px 25px rgba(168, 85, 247, 0.25);
+}
+
+.tool-item svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    filter: brightness(0) invert(1);
+}
+
+/* toolbar icon sizing + force white color for SVG files used via <img> */
+.tool-item .icon {
+    width: 24px;               /* desired icon size */
+    height: 24px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    object-fit: contain;
+    /* Force any dark/colored SVG to render white */
+    filter: brightness(0) saturate(100%) invert(1);
+}
+
+/* History actions */
+.history-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.history-actions .tool-item {
+    flex: 1;
+    min-width: 0; /* Allow shrinking */
+}
+
+/* Action buttons (Clear Canvas) */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.clear-btn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+}
+
+.clear-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* Responsive tool adjustments */
+@media (max-width: 768px) {
+    .toolbar {
+        width: 150px;
+        min-width: 150px;
+    }
+    
+    .tool-items {
+        grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+        gap: 5px;
+    }
+    
+    .tool-item {
+        min-height: 30px;
+        font-size: 1rem;
+    }
+}

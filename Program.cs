@@ -7,11 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// Register your EF DbContext
+// Register EF DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register Identity for ApplicationUser (adds UserManager<ApplicationUser>, SignInManager<ApplicationUser>, etc.)
+// Register Identity for ApplicationUser (adds UserManager<ApplicationUser>, SignInManager<ApplicationUser>, and more)
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -55,7 +55,7 @@ using (var scope = app.Services.CreateScope())
         }
         catch { }
 
-        // Count users (should be 0 initially)
+        // Count users 
         var userCount = context.Users.Count();
         Console.WriteLine($"Current user count: {userCount}");
 
@@ -66,7 +66,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
+// the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -75,7 +75,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Add debugging middleware
+// debugging middleware
 app.Use(async (context, next) =>
 {
     Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");

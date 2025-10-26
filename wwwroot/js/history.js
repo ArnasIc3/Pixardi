@@ -37,20 +37,7 @@ export function undo() {
     });
 }
 
-export function clearCanvas() {
-    startAction('clear');
-    const grid = getGridElement();
-    if (!grid) { endAction(); return; }
-    const pixels = Array.from(grid.querySelectorAll('.pixel'));
-    pixels.forEach(px => {
-        const x = parseInt(px.dataset.x, 10);
-        const y = parseInt(px.dataset.y, 10);
-        const prev = px.style.backgroundColor || '';
-        recordPixelChange(x, y, prev);
-        px.style.backgroundColor = '';
-    });
-    endAction();
-}
+
 
 /**
  * Bind Ctrl+Z / Cmd+Z to undo().
@@ -72,6 +59,5 @@ export default {
     recordPixelChange,
     endAction,
     undo,
-    clearCanvas,
     bindHistoryKeys
 };

@@ -11,7 +11,7 @@ export function createCursorPreview() {
     const preview = document.createElement('div');
     preview.id = 'cursorPreview';
 
-    // Basic styles — you can override via CSS if needed
+    // Basic styles 
     preview.style.boxSizing = 'border-box';
     preview.style.position = 'fixed';
     preview.style.pointerEvents = 'none';

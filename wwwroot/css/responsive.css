@@ -1,0 +1,299 @@
+/* Responsive design and mobile adaptations */
+
+/* Responsive: stack sidebar above canvas on narrow screens */
+@media (max-width: 800px) {
+    .canvas-layout {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        order: 1;
+    }
+    .canvas-area {
+        order: 2;
+        width: 100%;
+    }
+    
+    .brand-title {
+        font-size: 1.5rem;
+        top: 15px;
+        left: 15px;
+    }
+    
+    .auth-nav {
+        top: 60px;
+        right: 15px;
+    }
+}
+
+/* Mobile landscape and smaller tablets */
+@media (max-width: 768px) {
+    .app-layout {
+        padding: 80px 10px 20px;
+    }
+    
+    .app-container {
+        flex-direction: column;
+        gap: 25px;
+        padding: 25px 20px;
+        width: 95vw;
+        max-width: none;
+    }
+    
+    .toolbar {
+        width: 100%;
+        min-width: 0;
+        order: 2; /* Move toolbar below canvas on mobile */
+    }
+    
+    .grid-area {
+        order: 1;
+        width: 100%;
+    }
+    
+    .tool-section {
+        padding: 12px;
+    }
+    
+    .tool-section h3 {
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+    
+    /* Horizontal toolbar layout on mobile */
+    .tool-items {
+        grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+        gap: 6px;
+    }
+    
+    .tool-item {
+        min-height: 40px;
+        font-size: 1.1rem;
+    }
+    
+    /* Size controls adjustments */
+    .size-controls {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .size-controls input {
+        width: 50px;
+        padding: 6px 8px;
+    }
+    
+    .update-size-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    /* Canvas wrapper mobile adjustments */
+    .canvas-wrapper {
+        max-width: 100%;
+        overflow: auto;
+    }
+    
+    /* Ensure grid fits on mobile */
+    .grid {
+        min-width: min-content;
+    }
+}
+
+/* Mobile portrait */
+@media (max-width: 480px) {
+    .app-layout {
+        padding: 70px 5px 15px;
+    }
+    
+    .brand-title {
+        font-size: 1.2rem;
+        top: 10px;
+        left: 10px;
+    }
+    
+    .theme-selector {
+        top: 10px;
+        right: 10px;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .auth-nav {
+        top: 100px;
+        right: 10px;
+    }
+    
+    .auth-buttons,
+    .user-info {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .auth-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        text-align: center;
+        min-width: 70px;
+    }
+    
+    .theme-btn {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+        min-width: 60px;
+        text-align: center;
+    }
+    
+    .app-container {
+        padding: 20px 15px;
+        border-radius: 15px;
+    }
+    
+    .toolbar {
+        gap: 15px;
+    }
+    
+    .tool-section {
+        padding: 10px;
+    }
+    
+    /* More compact tool grid on small screens */
+    .tool-items {
+        grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+        gap: 4px;
+    }
+    
+    .tool-item {
+        min-height: 35px;
+        font-size: 1rem;
+    }
+    
+    /* Size controls stack vertically on very small screens */
+    .size-controls {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .size-controls > div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Smaller pixel size on mobile for better touch interaction */
+    :root {
+        --pixel-size: 10px;
+    }
+}
+
+/* High DPI display adjustments */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .pixel {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        image-rendering: pixelated;
+    }
+    
+    .cursor-preview {
+        border-width: 1px;
+    }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    .app-layout {
+        padding: 40px 10px 10px;
+    }
+    
+    .app-container {
+        flex-direction: row;
+        gap: 15px;
+        padding: 15px;
+        max-height: 90vh;
+    }
+    
+    .toolbar {
+        order: 1;
+        width: 160px;
+        min-width: 160px;
+        max-height: none;
+        overflow-y: auto;
+    }
+    
+    .grid-area {
+        order: 2;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .canvas-wrapper {
+        max-height: 70vh;
+        overflow: auto;
+    }
+}
+
+/* Print styles */
+@media print {
+    .brand-title,
+    .theme-selector,
+    .toolbar {
+        display: none;
+    }
+    
+    .app-container {
+        background: white;
+        border: 1px solid #ccc;
+        box-shadow: none;
+    }
+    
+    .canvas-wrapper {
+        border-color: #ccc;
+    }
+    
+    .pixel {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    html {
+        animation: none;
+    }
+}
+
+/* Dark mode support (for system theme preference) */
+@media (prefers-color-scheme: dark) {
+    /* Already using dark theme by default, but could add overrides here */
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    :root {
+        --panel-border: rgba(255, 255, 255, 0.8);
+        --primary-300: #ffffff;
+        --text: #ffffff;
+    }
+    
+    .tool-item,
+    .color-option,
+    .form-group input {
+        border-width: 2px;
+    }
+}
+
+/* Focus visibility for better accessibility */
+@media (prefers-reduced-motion: no-preference) {
+    *:focus-visible {
+        outline: 2px solid var(--primary-400);
+        outline-offset: 2px;
+    }
+}
