@@ -14,6 +14,8 @@
     --text: #f8f7ff;
     --sidebar-width: 190px; /* match existing sidebar width */
     --pixel-size: 12px;     /* default pixel size, overridden by JS */
+    --sidebar-width: 190px; /* match existing sidebar width */
+    --pixel-size: 12px;     /* default pixel size, overridden by JS */
 }
 
 html {
