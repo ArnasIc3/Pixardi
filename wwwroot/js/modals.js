@@ -26,9 +26,11 @@ class ModalManager {
     }
 
     show(modalId) {
+        console.log('Showing modal:', modalId);
         this.closeAll();
         const modal = document.getElementById(modalId);
         if (modal && this.overlay) {
+            console.log('Modal elements found, adding active classes');
             this.overlay.classList.add('active');
             modal.classList.add('active');
             
@@ -37,6 +39,9 @@ class ModalManager {
             if (firstInput) {
                 setTimeout(() => firstInput.focus(), 100);
             }
+            console.log('Modal should now be visible');
+        } else {
+            console.error('Modal or overlay not found:', { modal: !!modal, overlay: !!this.overlay });
         }
     }
 
@@ -69,7 +74,9 @@ export const modalManager = new ModalManager();
 
 // Save Project Modal
 export function showSaveModal() {
+    console.log('showSaveModal called');
     return new Promise((resolve) => {
+        console.log('Attempting to show save modal');
         modalManager.show('saveModal');
         
         const nameInput = document.getElementById('projectName');

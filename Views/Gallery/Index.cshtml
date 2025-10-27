@@ -1,0 +1,123 @@
+@model List<Project>
+@{
+    ViewData["Title"] = "Gallery";
+    var currentSort = ViewData["CurrentSort"]?.ToString() ?? "recent";
+}
+
+@Html.AntiForgeryToken()
+
+<h1 class="brand-title">Pixardi</h1>
+
+<div class="gallery-container">
+    <div class="gallery-header">
+        <h1>THE Gallery</h1>
+        <div class="gallery-controls">
+            <div class="sort-buttons">
+                <a href="?sort=recent" class="sort-btn @(currentSort == "recent" ? "active" : "")">Recent</a>
+                <a href="?sort=popular" class="sort-btn @(currentSort == "popular" ? "active" : "")">Popular</a>
+                <a href="?sort=views" class="sort-btn @(currentSort == "views" ? "active" : "")">Most Viewed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-grid">
+        @foreach (var project in Model)
+        {
+            <div class="gallery-item">
+                <div class="project-preview" onclick="viewProject(@project.Id)">
+                    <div class="pixel-canvas-preview" data-canvas="@project.CanvasData" data-width="@project.Width"
+                        data-height="@project.Height"></div>
+                </div>
+
+                <div class="project-info">
+                    <h3 class="project-title">@project.Name</h3>
+                    <p class="project-author">by @(project.User.DisplayName ?? project.User.Email)</p>
+
+                    <div class="project-stats">
+                        <span class="stat">
+                            ❤️ @project.LikesCount
+                        </span>
+                        <span class="stat">
+                            💬 @project.CommentsCount
+                        </span>
+                        <span class="stat">
+                            👁️ @project.Views
+                        </span>
+                    </div>
+
+                    <div class="project-meta">
+                        <span class="project-size">@project.Width×@project.Height</span>
+                        <span class="project-date">@project.CreatedAt.ToString("MMM dd")</span>
+                    </div>
+
+                    <!-- Like and Comment Actions -->
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="project-actions">
+                            <button class="action-btn like-btn" data-project-id="@project.Id"
+                                onclick="toggleLike(@project.Id, this)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                                <span class="like-count">@project.LikesCount</span>
+                            </button>
+                            <button class="action-btn comment-btn" onclick="showCommentModal(@project.Id, '@project.Name')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                Comment
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-gallery">
+            <h2>No public artworks yet</h2>
+            <p>Be the first to share your pixel art with the community!</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Start Creating</a>
+        </div>
+    }
+</div>
+
+<!-- Comment Modal -->
+<div id="commentModal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="commentModalTitle">Add Comment</h3>
+            <button class="modal-close" onclick="closeCommentModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <textarea id="commentText" placeholder="Write your comment..." rows="4"
+                style="width: 100%; resize: vertical; padding: 12px; border: 1px solid var(--panel-border); border-radius: 6px; background: var(--bg-dark-3); color: var(--text);"></textarea>
+            <div class="modal-message" id="commentMessage"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeCommentModal()">Cancel</button>
+            <button class="btn btn-primary" id="submitCommentBtn" onclick="submitComment()">Post Comment</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Gallery URLs for JavaScript -->
+    <script>
+        // Generate URLs properly for JavaScript
+        window.galleryUrls = {
+            details: '@Url.Action("Details", "Gallery")/',
+            like: '@Url.Action("Like", "Gallery")/',
+            addComment: '@Url.Action("AddComment", "Gallery")'
+        };
+    </script>
+
+    <!-- Load Gallery JavaScript -->
+    <script src="~/js/gallery.js" asp-append-version="true"></script>
+}

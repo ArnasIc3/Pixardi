@@ -155,6 +155,30 @@ namespace Pixardi.Controllers
                 return Json(new { success = false, message = $"Error generating PNG: {ex.Message}" });
             }
         }
+
+        // TEST ENDPOINT - Create sample project for current user
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> CreateSample()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            // Create a simple test project
+            var sampleProject = new Project
+            {
+                Name = "Test Heart",
+                Width = 8,
+                Height = 8,
+                CanvasData = "{\"2,1\":\"#ff0000\",\"3,1\":\"#ff0000\",\"5,1\":\"#ff0000\",\"6,1\":\"#ff0000\",\"1,2\":\"#ff0000\",\"2,2\":\"#ff0000\",\"3,2\":\"#ff0000\",\"4,2\":\"#ff0000\",\"5,2\":\"#ff0000\",\"6,2\":\"#ff0000\",\"7,2\":\"#ff0000\",\"1,3\":\"#ff0000\",\"2,3\":\"#ff0000\",\"3,3\":\"#ff0000\",\"4,3\":\"#ff0000\",\"5,3\":\"#ff0000\",\"6,3\":\"#ff0000\",\"7,3\":\"#ff0000\",\"2,4\":\"#ff0000\",\"3,4\":\"#ff0000\",\"4,4\":\"#ff0000\",\"5,4\":\"#ff0000\",\"6,4\":\"#ff0000\",\"3,5\":\"#ff0000\",\"4,5\":\"#ff0000\",\"5,5\":\"#ff0000\",\"4,6\":\"#ff0000\"}",
+                UserId = userId,
+                IsPublic = false
+            };
+
+            _context.Projects.Add(sampleProject);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Sample project created! You can now test the Share button.", projectName = sampleProject.Name });
+        }
     }
 
     public class SaveProjectRequest

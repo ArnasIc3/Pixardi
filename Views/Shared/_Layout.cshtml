@@ -22,12 +22,13 @@
     <link rel="stylesheet" href="~/css/responsive.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/modals.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/loading.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/gallery.css" asp-append-version="true" />
 
     <!-- Render additional styles from views -->
     @await RenderSectionAsync("Styles", required: false)
 </head>
 
-<body>
+<body class="@ViewData["BodyClass"]">
     @if (!ViewContext.RouteData.Values["controller"]?.ToString()?.Equals("Account", StringComparison.OrdinalIgnoreCase)
         == true)
     {
@@ -57,6 +58,37 @@
             </div>
         </div>
     }
+
+    <!-- Dynamic Navigation -->
+    @{
+        var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+        var action = ViewContext.RouteData.Values["action"]?.ToString();
+        var isHomePage = controller?.Equals("Home", StringComparison.OrdinalIgnoreCase) == true && action?.Equals("Index",
+        StringComparison.OrdinalIgnoreCase) == true;
+        var isGalleryPage = controller?.Equals("Gallery", StringComparison.OrdinalIgnoreCase) == true;
+        var isAccountPage = controller?.Equals("Account", StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+    @if (!isAccountPage)
+    {
+        <nav class="main-nav">
+            @if (isGalleryPage)
+            {
+                <!-- On Gallery page - only show Editor button -->
+                <a href="@Url.Action("Index", "Home")" class="nav-link editor-link">
+                    Editor
+                </a>
+            }
+            else
+            {
+                <!-- On Home page or other pages - show Gallery button -->
+                <a href="@Url.Action("Index", "Gallery")" class="nav-link gallery-link">
+                    Gallery
+                </a>
+            }
+        </nav>
+    }
+
     <!-- Authentication Navigation -->
     <nav class="auth-nav">
         @if (User.Identity?.IsAuthenticated == true)
@@ -145,7 +177,123 @@
         @RenderBody()
     </main>
 
-    <!-- Scripts at bottom for proper loading -->
+    <!-- Global scripts for all pages -->
+    <script>
+        // Global function to clear stuck overlays - available on all pages
+        window.clearStuckOverlays = function (force = false) {
+            console.log('Clearing stuck overlays...', force ? '(FORCED)' : '');
+
+            // Always clear loading screen
+            const loadingElement = document.getElementById('loadingScreen');
+            if (loadingElement) {
+                loadingElement.classList.remove('active', 'fade-background', 'fade-content', 'auth');
+                loadingElement.style.opacity = '0';
+                loadingElement.style.visibility = 'hidden';
+                loadingElement.style.display = 'none';
+                loadingElement.style.zIndex = '-1';
+                loadingElement.style.pointerEvents = 'none';
+            }
+
+            // Only clear modals if forced or if we're certain they're stuck
+            if (force) {
+                // Clear all modal overlays (including the main one and Gallery comment modal)
+                const allModalOverlays = document.querySelectorAll('.modal-overlay');
+                allModalOverlays.forEach(overlay => {
+                    overlay.classList.remove('active');
+                    overlay.style.display = 'none';
+                    overlay.style.opacity = '0';
+                    overlay.style.visibility = 'hidden';
+                    overlay.style.zIndex = '-1';
+                    overlay.style.pointerEvents = 'none';
+                    overlay.style.backdropFilter = 'none';
+                    overlay.style.filter = 'none';
+                });
+
+                // Clear all modals
+                const allModals = document.querySelectorAll('.modal');
+                allModals.forEach(modal => {
+                    modal.classList.remove('active');
+                    modal.style.display = 'none';
+                });
+            }
+
+            // Clear specific Gallery comment modal (this one is often stuck)
+            const commentModal = document.getElementById('commentModal');
+            if (commentModal && !commentModal.querySelector('.modal.active')) {
+                commentModal.classList.remove('active');
+                commentModal.style.display = 'none';
+                commentModal.style.backdropFilter = 'none';
+            }
+
+            // Clear any backdrop filters that might be stuck on body/html
+            document.body.style.backdropFilter = 'none';
+            document.body.style.filter = 'none';
+            document.documentElement.style.backdropFilter = 'none';
+            document.documentElement.style.filter = 'none';
+
+            // Clear all elements with backdrop-filter
+            const allElements = document.querySelectorAll('*');
+            allElements.forEach(element => {
+                if (element.style.backdropFilter && element.style.backdropFilter !== 'none') {
+                    element.style.backdropFilter = 'none';
+                }
+                if (element.style.filter && element.style.filter.includes('blur')) {
+                    element.style.filter = 'none';
+                }
+            });
+
+            // Re-enable body scroll if it was disabled
+            document.body.style.overflow = '';
+
+            console.log('Cleared stuck overlays and all backdrop filters');
+        };
+
+        // Auto-clear on page load for ALL pages after a delay
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if we're on different pages
+            var isGalleryPage = window.location.pathname.toLowerCase().includes('/gallery');
+            var isAccountPage = window.location.pathname.toLowerCase().includes('/account');
+            var isHomePage = window.location.pathname === '/' || window.location.pathname.toLowerCase().includes('/home');
+
+            if (isGalleryPage || isAccountPage) {
+                // Immediate clear for pages that shouldn't have loading animation
+                setTimeout(function () {
+                    window.clearStuckOverlays(true); // Force clear for these pages
+                }, 100);
+            } else if (isHomePage) {
+                // For home page, NO auto-clear - let modals work properly
+                console.log('Home page: Skipping auto-clear to allow modals to work');
+            } else {
+                // For any other page, gentle clear after short delay
+                setTimeout(function () {
+                    window.clearStuckOverlays(false);
+                }, 500);
+            }
+        });
+    </script>
+
+    <!-- Global scripts for all pages -->
+    <script src="~/js/main.js" asp-append-version="true"></script>
+    <script src="~/js/loading.js" asp-append-version="true"></script>
+    <script src="~/js/auth.js" asp-append-version="true"></script>
+    <script src="~/js/modals.js" asp-append-version="true"></script>
+    <script src="~/js/cursor.js" asp-append-version="true"></script>
+
+    @if (isGalleryPage)
+    {
+        <script src="~/js/gallery.js" asp-append-version="true"></script>
+    }
+
+    @if (isHomePage)
+    {
+        <script src="~/js/drawing.js" asp-append-version="true"></script>
+        <script src="~/js/tools.js" asp-append-version="true"></script>
+        <script src="~/js/grid.js" asp-append-version="true"></script>
+        <script src="~/js/history.js" asp-append-version="true"></script>
+        <script src="~/js/state.js" asp-append-version="true"></script>
+        <script src="~/js/projects.js" asp-append-version="true"></script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

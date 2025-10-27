@@ -44,8 +44,14 @@ export function initToolbar() {
     refreshColorUI();
 
     // keep UI in sync if state changes elsewhere
-    onState('tool', () => refreshToolUI());
+    onState('tool', () => {
+        refreshToolUI();
+        updateVirusControlsVisibility();
+    });
     onState('color', () => refreshColorUI());
+
+    // Initialize virus controls
+    initVirusControls();
 
     // ensure cursor preview handlers are attached (idempotent)
     try { attachCursorPreviewHandlers(); } catch (e) { /* ignore if not available yet */ }
@@ -140,9 +146,12 @@ export function floodFill(startX, startY, targetColor, fillColor) {
 export function pixelVirus(startX, startY, opts = {}) {
     const grid = getGridElement();
     if (!grid) return;
-    const infectionRate = typeof opts.infectionRate === 'number' ? opts.infectionRate : 0.5;
-    const spreadDelay = typeof opts.spreadDelay === 'number' ? opts.spreadDelay : 40;
-    const maxGenerations = typeof opts.maxGenerations === 'number' ? opts.maxGenerations : 30;
+    
+    // Get settings from sliders if not provided in opts
+    const sliderSettings = getVirusSettings();
+    const infectionRate = typeof opts.infectionRate === 'number' ? opts.infectionRate : sliderSettings.infectionRate;
+    const spreadDelay = typeof opts.spreadDelay === 'number' ? opts.spreadDelay : sliderSettings.spreadDelay;
+    const maxGenerations = typeof opts.maxGenerations === 'number' ? opts.maxGenerations : sliderSettings.maxGenerations;
 
     const infectionColor = normalizeColor(opts.color || getCurrentColor() || '#000000');
 
@@ -223,6 +232,79 @@ export function clearCanvas() {
     endAction();
 }
 
+/**
+ * Initialize virus tool controls
+ */
+function initVirusControls() {
+    const infectionRateSlider = document.getElementById('infectionRate');
+    const spreadDelaySlider = document.getElementById('spreadDelay');
+    const maxGenerationsSlider = document.getElementById('maxGenerations');
+    
+    const infectionRateValue = document.getElementById('infectionRateValue');
+    const spreadDelayValue = document.getElementById('spreadDelayValue');
+    const maxGenerationsValue = document.getElementById('maxGenerationsValue');
+
+    if (infectionRateSlider && infectionRateValue) {
+        infectionRateSlider.addEventListener('input', (e) => {
+            const value = parseFloat(e.target.value);
+            infectionRateValue.textContent = Math.round(value * 100) + '%';
+        });
+    }
+
+    if (spreadDelaySlider && spreadDelayValue) {
+        spreadDelaySlider.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            spreadDelayValue.textContent = value + 'ms';
+        });
+    }
+
+    if (maxGenerationsSlider && maxGenerationsValue) {
+        maxGenerationsSlider.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            maxGenerationsValue.textContent = value.toString();
+        });
+    }
+}
+
+/**
+ * Show/hide virus controls based on selected tool
+ */
+function updateVirusControlsVisibility() {
+    const virusControls = document.getElementById('virusControls');
+    const currentTool = getCurrentTool();
+    
+    if (!virusControls) return;
+    
+    if (currentTool === 'virus') {
+        virusControls.style.display = 'block';
+        virusControls.classList.add('show');
+        virusControls.classList.remove('hide');
+    } else {
+        virusControls.classList.add('hide');
+        virusControls.classList.remove('show');
+        setTimeout(() => {
+            if (!virusControls.classList.contains('show')) {
+                virusControls.style.display = 'none';
+            }
+        }, 300);
+    }
+}
+
+/**
+ * Get current virus tool settings from sliders
+ */
+export function getVirusSettings() {
+    const infectionRate = parseFloat(document.getElementById('infectionRate')?.value || '0.5');
+    const spreadDelay = parseInt(document.getElementById('spreadDelay')?.value || '40');
+    const maxGenerations = parseInt(document.getElementById('maxGenerations')?.value || '30');
+    
+    return {
+        infectionRate,
+        spreadDelay,
+        maxGenerations
+    };
+}
+
 /* Exported helper list (optional for other modules) */
 export const tools = {
     initToolbar,
@@ -231,4 +313,5 @@ export const tools = {
     floodFill,
     pixelVirus,
     clearCanvas,
+    getVirusSettings,
 };

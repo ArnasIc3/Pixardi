@@ -1,5 +1,5 @@
-/* Loading Screen */
-.loading-screen {
+/* Loading Screen - Updated to use ID selector */
+#loadingScreen {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,26 +12,41 @@
     z-index: 9999;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out, background 0.8s ease-out;
 }
 
-.loading-screen.active {
+#loadingScreen.active {
     opacity: 1;
     visibility: visible;
     background: #000000; 
 }
 
+/* Fade out state - smoother transition */
+#loadingScreen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    background: rgba(0, 0, 0, 0);
+    transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out, background 0.6s ease-in-out;
+}
+
 /* Background fades out ONLY when this class is added */
-.loading-screen.active.fade-background {
+#loadingScreen.active.fade-background {
     background: rgba(0, 0, 0, 0.2); /* Semi-transparent when fading */
-    transition: background 0.5s ease;
+    transition: background 0.8s ease-out;
 }
 
 .loading-content {
     text-align: center;
     animation: loadingPulse 1.5s ease-in-out infinite;
     opacity: 1;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Fade out content animation */
+#loadingScreen.fade-out .loading-content {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+    animation: none; /* Stop the pulsing animation when fading out */
 }
 
 @keyframes loadingPulse {
@@ -42,6 +57,12 @@
 /* Pixelated Logo Animation */
 .loading-logo {
     margin-bottom: 24px;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+#loadingScreen.fade-out .loading-logo {
+    opacity: 0;
+    transform: scale(0.8);
 }
 
 .pixel-grid {
@@ -59,7 +80,25 @@
     background: var(--primary-500);
     border-radius: 2px;
     animation: pixelPop 1.5s ease-in-out infinite;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
 }
+
+/* Fade out pixels individually for smoother effect */
+#loadingScreen.fade-out .pixel-grid .pixel {
+    opacity: 0;
+    transform: scale(0);
+    animation: none;
+}
+
+#loadingScreen.fade-out .pixel-grid .pixel:nth-child(1) { transition-delay: 0s; }
+#loadingScreen.fade-out .pixel-grid .pixel:nth-child(2) { transition-delay: 0.05s; }
+#loadingScreen.fade-out .pixel-grid .pixel:nth-child(3) { transition-delay: 0.1s; }
+#loadingScreen.fade-out .pixel-grid .pixel:nth-child(4) { transition-delay: 0.15s; }
+#loadingScreen.fade-out .pixel-grid .pixel:nth-child(5) { transition-delay: 0.2s; }
+#loadingScreen.fade-out .pixel-grid .pixel:nth-child(6) { transition-delay: 0.25s; }
+#loadingScreen.fade-out .pixel-grid .pixel:nth-child(7) { transition-delay: 0.3s; }
+#loadingScreen.fade-out .pixel-grid .pixel:nth-child(8) { transition-delay: 0.35s; }
+#loadingScreen.fade-out .pixel-grid .pixel:nth-child(9) { transition-delay: 0.4s; }
 
 .pixel-grid .pixel:nth-child(1) { animation-delay: 0s; }
 .pixel-grid .pixel:nth-child(2) { animation-delay: 0.1s; }
@@ -91,6 +130,13 @@
     margin: 0 0 20px 0;
     letter-spacing: 2px;
     animation: titleGlow 2s ease-in-out infinite alternate;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+#loadingScreen.fade-out .loading-title {
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: none;
 }
 
 @keyframes titleGlow {
@@ -108,6 +154,12 @@
     justify-content: center;
     gap: 8px;
     margin: 20px 0;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+#loadingScreen.fade-out .loading-spinner {
+    opacity: 0;
+    transform: scale(0.8);
 }
 
 .spinner-dot {
@@ -116,7 +168,18 @@
     background: var(--primary-400);
     border-radius: 50%;
     animation: spinnerBounce 1.4s ease-in-out infinite both;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
+
+#loadingScreen.fade-out .spinner-dot {
+    opacity: 0;
+    transform: scale(0);
+    animation: none;
+}
+
+#loadingScreen.fade-out .spinner-dot:nth-child(1) { transition-delay: 0s; }
+#loadingScreen.fade-out .spinner-dot:nth-child(2) { transition-delay: 0.1s; }
+#loadingScreen.fade-out .spinner-dot:nth-child(3) { transition-delay: 0.2s; }
 
 .spinner-dot:nth-child(1) { animation-delay: -0.32s; }
 .spinner-dot:nth-child(2) { animation-delay: -0.16s; }
@@ -138,6 +201,13 @@
     font-size: 1rem;
     margin: 10px 0 0 0;
     animation: textFade 1.5s ease-in-out infinite;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+#loadingScreen.fade-out .loading-text {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: none;
 }
 
 @keyframes textFade {
@@ -146,11 +216,11 @@
 }
 
 /* Loading Screen Variants */
-.loading-screen.auth {
+#loadingScreen.auth {
     background: #000000; /* Keep auth background black too */
 }
 
-.loading-screen.auth .loading-title {
+#loadingScreen.auth .loading-title {
     color: #ffffff; /* White text for auth */
 }
 

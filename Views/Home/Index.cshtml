@@ -6,6 +6,35 @@
 
 <div class="container">
     <div class="canvas-layout">
+        <!-- Virus tool controls (positioned to the left of sidebar) -->
+        <aside class="virus-controls" id="virusControls" style="display: none;">
+            <div class="controls-header">
+                <h3>
+                    <img src="@Url.Content("~/icons/virus.svg")" alt="Virus" class="header-icon" width="16"
+                        height="16" />
+                    Virus Settings
+                </h3>
+            </div>
+
+            <div class="control-group">
+                <label for="infectionRate">Infection Rate</label>
+                <input type="range" id="infectionRate" min="0.4" max="1.0" step="0.1" value="0.5">
+                <span class="value-display" id="infectionRateValue">50%</span>
+            </div>
+
+            <div class="control-group">
+                <label for="spreadDelay">Spread Speed</label>
+                <input type="range" id="spreadDelay" min="10" max="150" step="10" value="40">
+                <span class="value-display" id="spreadDelayValue">40ms</span>
+            </div>
+
+            <div class="control-group">
+                <label for="maxGenerations">Max Spread</label>
+                <input type="range" id="maxGenerations" min="10" max="100" step="5" value="30">
+                <span class="value-display" id="maxGenerationsValue">30</span>
+            </div>
+        </aside>
+
         <!-- Left sidebar: tools + action buttons -->
         <aside class="sidebar">
             <div class="toolbar">
@@ -102,6 +131,17 @@
                     <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
                 Download PNG
+            </button>
+
+            <button id="shareProjectBtn" class="project-btn share-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                Share to Gallery
             </button>
         </div>
     }
