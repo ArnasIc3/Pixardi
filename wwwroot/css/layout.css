@@ -1,0 +1,316 @@
+/* Canvas Area - matches the HTML structure */
+.canvas-area {
+    flex: 1 1 auto;
+    min-width: 0; /* allow children to shrink inside flex container */
+}
+
+.canvas-layout {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+/* Sidebar containing toolbar and action-row */
+.sidebar {
+    width: 240px; 
+    flex-shrink: 0;
+    background: var(--bg-dark-2);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Canvas area - right side */
+.canvas-area {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+}
+
+.grid-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Size controls */
+.size-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.size-controls label {
+    font-weight: 600;
+    color: var(--primary-300);
+    font-size: 0.9rem;
+}
+
+.size-controls input {
+    width: 60px;
+    padding: 8px 12px;
+    background: rgba(76, 29, 149, 0.2);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    color: var(--text);
+    text-align: center;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.size-controls input:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.25);
+}
+
+.update-size-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+}
+
+.update-size-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+/* Grid styles - matching original structure */
+.grid {
+    display: grid;
+    background: #ffffff;
+    padding: 0;
+    width: fit-content;
+    height: fit-content;
+    margin: 0 auto;
+    border: 2px solid #000000;
+    max-width: none; /* ensure no accidental max */
+}
+
+.grid, .grid * {
+    cursor: none !important;
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}
+
+.pixel {
+    width: var(--pixel-size);
+    height: var(--pixel-size);
+    background-color: white;
+    border: none;
+    outline: none;
+}
+
+/* Action row for buttons */
+.action-row {
+    display: flex;
+    gap: 10px;
+    padding: 6px 12px;
+    justify-content: flex-end;
+    width: 100%;
+    align-items: center;
+}
+
+.action-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--panel-dark);
+    border: 1px solid var(--panel-border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    background: var(--primary-500);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+.action-button .icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) saturate(100%) invert(1);
+}
+
+/* Theme selector */
+.theme-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+}
+
+.theme-btn {
+    padding: 8px 12px;
+    background: var(--panel-dark);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.theme-btn:hover {
+    background: var(--primary-500);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+.theme-btn.active {
+    background: var(--primary-500);
+    border-color: var(--primary-400);
+}
+
+/* Theme selector */
+.theme-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+}
+
+.theme-btn {
+    padding: 8px 12px;
+    background: var(--panel-dark);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.theme-btn:hover {
+    background: var(--primary-500);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+.theme-btn.active {
+    background: var(--primary-500);
+    border-color: var(--primary-400);
+}
+
+/* Project controls - positioned on the right side */
+.project-controls {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-dark-2);
+    border-radius: 12px;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+}
+
+.project-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    background: var(--bg-dark-3);
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.project-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.save-btn:hover {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.3);
+    color: #22c55e;
+}
+
+.load-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #3b82f6;
+}
+
+.download-btn:hover {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgba(168, 85, 247, 0.3);
+    color: var(--primary-400);
+}
+
+.project-btn svg {
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .project-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        top: auto;
+        transform: none;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+    }
+    
+    .project-btn {
+        min-width: 120px;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .project-controls {
+        right: 10px;
+        bottom: 10px;
+        gap: 8px;
+        padding: 10px;
+    }
+    
+    .project-btn {
+        min-width: 100px;
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+}

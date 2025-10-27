@@ -1,0 +1,172 @@
+/* Loading Screen */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.loading-screen.active {
+    opacity: 1;
+    visibility: visible;
+    background: #000000; 
+}
+
+/* Background fades out ONLY when this class is added */
+.loading-screen.active.fade-background {
+    background: rgba(0, 0, 0, 0.2); /* Semi-transparent when fading */
+    transition: background 0.5s ease;
+}
+
+.loading-content {
+    text-align: center;
+    animation: loadingPulse 1.5s ease-in-out infinite;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+@keyframes loadingPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Pixelated Logo Animation */
+.loading-logo {
+    margin-bottom: 24px;
+}
+
+.pixel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 20px);
+    grid-template-rows: repeat(3, 20px);
+    gap: 4px;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.pixel-grid .pixel {
+    width: 20px;
+    height: 20px;
+    background: var(--primary-500);
+    border-radius: 2px;
+    animation: pixelPop 1.5s ease-in-out infinite;
+}
+
+.pixel-grid .pixel:nth-child(1) { animation-delay: 0s; }
+.pixel-grid .pixel:nth-child(2) { animation-delay: 0.1s; }
+.pixel-grid .pixel:nth-child(3) { animation-delay: 0.2s; }
+.pixel-grid .pixel:nth-child(4) { animation-delay: 0.3s; }
+.pixel-grid .pixel:nth-child(5) { animation-delay: 0.4s; }
+.pixel-grid .pixel:nth-child(6) { animation-delay: 0.5s; }
+.pixel-grid .pixel:nth-child(7) { animation-delay: 0.6s; }
+.pixel-grid .pixel:nth-child(8) { animation-delay: 0.7s; }
+.pixel-grid .pixel:nth-child(9) { animation-delay: 0.8s; }
+
+@keyframes pixelPop {
+    0%, 70% { 
+        transform: scale(1);
+        background: var(--primary-500);
+    }
+    35% { 
+        transform: scale(1.3);
+        background: var(--primary-400);
+        box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+    }
+}
+
+/* Loading Title */
+.loading-title {
+    color: #ffffff; /* Pure white text on black background */
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    letter-spacing: 2px;
+    animation: titleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+    from { 
+        text-shadow: 0 0 5px rgba(168, 85, 247, 0.3);
+    }
+    to { 
+        text-shadow: 0 0 20px rgba(168, 85, 247, 0.6), 0 0 30px rgba(168, 85, 247, 0.3);
+    }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.spinner-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--primary-400);
+    border-radius: 50%;
+    animation: spinnerBounce 1.4s ease-in-out infinite both;
+}
+
+.spinner-dot:nth-child(1) { animation-delay: -0.32s; }
+.spinner-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes spinnerBounce {
+    0%, 80%, 100% { 
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% { 
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Loading Text */
+.loading-text {
+    color: #cccccc; /* Light gray text on black background */
+    font-size: 1rem;
+    margin: 10px 0 0 0;
+    animation: textFade 1.5s ease-in-out infinite;
+}
+
+@keyframes textFade {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Loading Screen Variants */
+.loading-screen.auth {
+    background: #000000; /* Keep auth background black too */
+}
+
+.loading-screen.auth .loading-title {
+    color: #ffffff; /* White text for auth */
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .loading-title {
+        font-size: 2rem;
+    }
+    
+    .pixel-grid {
+        grid-template-columns: repeat(3, 16px);
+        grid-template-rows: repeat(3, 16px);
+    }
+    
+    .pixel-grid .pixel {
+        width: 16px;
+        height: 16px;
+    }
+}

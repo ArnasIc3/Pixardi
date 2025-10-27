@@ -1,26 +1,32 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Pixardi.Models;
 
 namespace Pixardi.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public HomeController(UserManager<ApplicationUser> userManager)
         {
-            // Add some debugging
-            Console.WriteLine("HomeController.Index() called");
-            ViewData["Title"] = "Pixardi - Pixel Art Editor";
-            return View();
+            _userManager = userManager;
         }
 
-        public IActionResult Test()
+        public async Task<IActionResult> Index()
         {
-            Console.WriteLine("HomeController.Test() called");
-            return View();
-        }
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    // Use DisplayName if available, otherwise fall back to email
+                    ViewData["UserDisplayName"] = !string.IsNullOrEmpty(user.DisplayName)
+                        ? user.DisplayName
+                        : user.Email?.Split('@')[0]; // Use part before @ if no display name
+                }
+            }
 
-        public IActionResult SelfContained()
-        {
-            Console.WriteLine("HomeController.SelfContained() called");
             return View();
         }
     }

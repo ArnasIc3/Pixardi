@@ -1,0 +1,108 @@
+/* Cursor preview - matches original #cursorPreview */
+#cursorPreview {
+    position: fixed;
+    pointer-events: none;
+    z-index: 2000;
+    transform: translate(-50%, -50%);
+    display: none; /* shown only when mouse over grid */
+    border-radius: 4px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
+    transition: transform 80ms linear, opacity 120ms;
+    opacity: 0.98;
+    backdrop-filter: blur(2px);
+    box-sizing: border-box;
+}
+
+/* normal brush preview: filled with current color at reduced opacity */
+#cursorPreview.brush {
+    background-color: rgba(0,0,0,0.5);
+    border: 2px solid rgba(255,255,255,0.85);
+}
+
+/* eraser preview: outline only, transparent fill */
+#cursorPreview.eraser {
+    background: transparent;
+    border: 2px dashed rgba(255,255,255,0.9);
+    mix-blend-mode: difference;
+}
+
+/* active when mouse down for visual feedback */
+#cursorPreview.active {
+    transform: translate(-50%, -50%) scale(0.95);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+}
+
+/* optional small cross when using very small pixels */
+#cursorPreview.cross::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 60%;
+    height: 2px;
+    background: rgba(255,255,255,0.9);
+    transform: translate(-50%,-50%) rotate(45deg);
+    mix-blend-mode: difference;
+}
+
+/* Cursor styles for different tools */
+.pixel.cursor-brush {
+    cursor: crosshair;
+}
+
+.pixel.cursor-eraser {
+    cursor: grab;
+}
+
+.pixel.cursor-fill {
+    cursor: pointer;
+}
+
+.pixel.cursor-virus {
+    cursor: cell;
+}
+
+/* Hover effects for different tools */
+.pixel:hover.cursor-brush {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.pixel:hover.cursor-eraser {
+    box-shadow: inset 0 0 0 2px rgba(255, 0, 0, 0.4);
+}
+
+.pixel:hover.cursor-fill {
+    box-shadow: inset 0 0 0 1px rgba(0, 255, 0, 0.4);
+}
+
+.pixel:hover.cursor-virus {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 0, 0.4);
+}
+
+/* Drawing state indicators */
+.pixel.drawing {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+.pixel.just-drawn {
+    animation: pixelPulse 0.3s ease-out;
+}
+
+@keyframes pixelPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Selection and preview states */
+.pixel.preview {
+    outline: 2px solid rgba(255, 255, 255, 0.6);
+    outline-offset: -1px;
+}
+
+.pixel.selected {
+    outline: 2px solid var(--primary-400);
+    outline-offset: -1px;
+    z-index: 1;
+}
