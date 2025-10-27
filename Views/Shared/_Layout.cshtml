@@ -20,18 +20,49 @@
     <link rel="stylesheet" href="~/css/cursor.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/responsive.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/modals.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/loading.css" asp-append-version="true" />
 
     <!-- Render additional styles from views -->
     @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
+    @if (!ViewContext.RouteData.Values["controller"]?.ToString()?.Equals("Account", StringComparison.OrdinalIgnoreCase)
+        == true)
+    {
+        <!-- Loading Screen -->
+        <div id="loadingScreen" class="loading-screen active">
+            <div class="loading-content">
+                <div class="loading-logo">
+                    <div class="pixel-grid">
+                        <div class="pixel"></div>
+                        <div class="pixel"></div>
+                        <div class="pixel"></div>
+                        <div class="pixel"></div>
+                        <div class="pixel"></div>
+                        <div class="pixel"></div>
+                        <div class="pixel"></div>
+                        <div class="pixel"></div>
+                        <div class="pixel"></div>
+                    </div>
+                </div>
+                <h1 class="loading-title">Pixardi</h1>
+                <div class="loading-spinner">
+                    <div class="spinner-dot"></div>
+                    <div class="spinner-dot"></div>
+                    <div class="spinner-dot"></div>
+                </div>
+                <p class="loading-text" id="loadingText">Loading...</p>
+            </div>
+        </div>
+    }
     <!-- Authentication Navigation -->
     <nav class="auth-nav">
         @if (User.Identity?.IsAuthenticated == true)
         {
             <div class="user-info">
-                <span>Welcome, @User.Identity.Name</span>
+                <span>Welcome, @(ViewData["UserDisplayName"] ?? User.Identity.Name) !</span>
                 <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="auth-btn logout-btn">Logout</button>
@@ -46,6 +77,69 @@
             </div>
         }
     </nav>
+
+    <!-- Modal Overlays -->
+    <div id="modalOverlay" class="modal-overlay">
+        <!-- Save Project Modal -->
+        <div id="saveModal" class="modal">
+            <div class="modal-header">
+                <h3>Save Project</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="projectName">Project Name:</label>
+                <input type="text" id="projectName" placeholder="Enter project name..." />
+                <div class="modal-message" id="saveMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="saveCancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveConfirmBtn">Save</button>
+            </div>
+        </div>
+
+        <!-- Load Project Modal -->
+        <div id="loadModal" class="modal">
+            <div class="modal-header">
+                <h3>Load Project</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="projectsList" class="projects-list">
+                    <div class="loading">Loading projects...</div>
+                </div>
+                <div class="modal-message" id="loadMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="loadCancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="loadConfirmBtn" disabled>Load Selected</button>
+            </div>
+        </div>
+
+        <!-- Download Modal -->
+        <div id="downloadModal" class="modal">
+            <div class="modal-header">
+                <h3>Download PNG</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="fileName">File Name:</label>
+                <input type="text" id="fileName" placeholder="pixardi-art" />
+                <div class="quality-settings">
+                    <label for="scaleSlider">Quality Scale: <span id="scaleValue">20x</span></label>
+                    <input type="range" id="scaleSlider" min="5" max="50" value="20" step="5" />
+                    <div class="quality-info">
+                        Canvas size: <span id="canvasInfo">Loading...</span><br>
+                        Output size: <span id="outputInfo">Loading...</span>
+                    </div>
+                </div>
+                <div class="modal-message" id="downloadMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="downloadCancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="downloadConfirmBtn">Download</button>
+            </div>
+        </div>
+    </div>
 
     <main role="main">
         @RenderBody()

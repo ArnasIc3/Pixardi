@@ -1,5 +1,7 @@
 import { getCanvasSize } from './state.js';
 import { getGridElement } from './grid.js';
+import { modalManager, showSaveModal, showLoadModal, showDownloadModal } from './modals.js';
+import { loadingScreen } from './loading.js';
 
 // Initialize project controls (with duplicate prevention)
 let initialized = false;
@@ -24,10 +26,12 @@ export function initProjectControls() {
 
 // Save project to server
 async function handleSaveProject() {
-    const projectName = prompt('Enter project name:');
-    if (!projectName) return;
-
     try {
+        const projectName = await showSaveModal();
+        if (!projectName) return;
+
+        const loadingPromise = loadingScreen.showSaving(`Saving "${projectName}"...`);
+
         const canvasData = getCanvasData();
         const { width, height } = getCanvasSize();
 
@@ -47,14 +51,18 @@ async function handleSaveProject() {
 
         const result = await response.json();
         
+        await loadingPromise;
+        loadingScreen.hide();
+
         if (result.success) {
-            alert('Project saved successfully!');
+            modalManager.showMessage('saveModal', 'Project saved successfully!', 'success');
+            setTimeout(() => modalManager.closeAll(), 1500);
         } else {
-            alert(`Error: ${result.message}`);
+            modalManager.showMessage('saveModal', `Error: ${result.message}`, 'error');
         }
     } catch (error) {
         console.error('Save error:', error);
-        alert('Failed to save project');
+        modalManager.showMessage('saveModal', 'Failed to save project', 'error');
     }
 }
 
@@ -64,55 +72,56 @@ async function handleLoadProject() {
         // First get list of projects
         const listResponse = await fetch('/Project/List');
         const listResult = await listResponse.json();
-
+    
         if (!listResult.success || listResult.projects.length === 0) {
-            alert('No saved projects found');
+            modalManager.show('loadModal');
+            modalManager.showMessage('loadModal', 'No saved projects found', 'error');
             return;
         }
 
-        // Show project selection dialog
-        const projectNames = listResult.projects.map(p => `${p.name} (${new Date(p.updatedAt).toLocaleDateString()})`);
-        const selection = prompt('Select project to load:\n' + projectNames.map((name, i) => `${i + 1}. ${name}`).join('\n') + '\n\nEnter number:');
-        
-        const index = parseInt(selection) - 1;
-        if (isNaN(index) || index < 0 || index >= listResult.projects.length) {
-            alert('Invalid selection');
-            return;
-        }
+        const selectedProject = await showLoadModal(listResult.projects);
+        if (!selectedProject) return;
 
-        const selectedProject = listResult.projects[index];
-        
+        const loadingPromise = loadingScreen.showLoading(`Loading "${selectedProject.name}"...`);
+
         // Load the selected project
         const loadResponse = await fetch(`/Project/Load?name=${encodeURIComponent(selectedProject.name)}`);
         const loadResult = await loadResponse.json();
 
+        await loadingPromise;
+        loadingScreen.hide();
+
         if (loadResult.success) {
             applyCanvasData(loadResult.project);
-            alert('Project loaded successfully!');
+            // Show success message briefly
+            modalManager.show('loadModal');
+            modalManager.showMessage('loadModal', 'Project loaded successfully!', 'success');
+            setTimeout(() => modalManager.closeAll(), 1500);
         } else {
-            alert(`Error: ${loadResult.message}`);
+            modalManager.showMessage('loadModal', `Error: ${loadResult.message}`, 'error');
         }
     } catch (error) {
         console.error('Load error:', error);
-        alert('Failed to load project');
+        modalManager.showMessage('loadModal', 'Failed to load project', 'error');
     }
 }
 
 // Download canvas as PNG (client-side generation with high quality)
 async function handleDownloadPng() {
     try {
-        const fileName = prompt('Enter file name (without extension):') || 'pixardi-art';
-        const { width, height } = getCanvasSize();
-        
-        const scaleFactor = 20;
+        const canvasSize = getCanvasSize();
+        const downloadOptions = await showDownloadModal(canvasSize);
+        if (!downloadOptions) return;
+
+        const { fileName, scale } = downloadOptions;
         
         // Create an off-screen canvas
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
         // Set canvas size scaled up for high quality
-        canvas.width = width * scaleFactor;
-        canvas.height = height * scaleFactor;
+        canvas.width = canvasSize.width * scale;
+        canvas.height = canvasSize.height * scale;
         
         // Disable image smoothing to keep sharp pixel edges
         ctx.imageSmoothingEnabled = false;
@@ -135,12 +144,11 @@ async function handleDownloadPng() {
                 
                 if (color && color !== 'transparent') {
                     ctx.fillStyle = color;
-                    // Draw a scaled rectangle instead of 1x1 pixel
                     ctx.fillRect(
-                        x * scaleFactor, 
-                        y * scaleFactor, 
-                        scaleFactor, 
-                        scaleFactor
+                        x * scale, 
+                        y * scale, 
+                        scale, 
+                        scale
                     );
                 }
             });
@@ -157,15 +165,19 @@ async function handleDownloadPng() {
                 a.click();
                 URL.revokeObjectURL(url);
                 document.body.removeChild(a);
-                console.log(`Downloaded ${fileName}.png at ${canvas.width}x${canvas.height}px (${scaleFactor}x scale)`);
+                
+                // Show success message
+                modalManager.show('downloadModal');
+                modalManager.showMessage('downloadModal', `Downloaded ${fileName}.png (${canvas.width}×${canvas.height}px)`, 'success');
+                setTimeout(() => modalManager.closeAll(), 2000);
             } else {
-                alert('Failed to generate PNG file');
+                modalManager.showMessage('downloadModal', 'Failed to generate PNG file', 'error');
             }
         }, 'image/png');
         
     } catch (error) {
         console.error('Download error:', error);
-        alert('Failed to download PNG file');
+        modalManager.showMessage('downloadModal', 'Failed to download PNG file', 'error');
     }
 }
 

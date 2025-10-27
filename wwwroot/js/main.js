@@ -1,14 +1,23 @@
-// App bootstrap (module entry). Initializes grid, tools, cursor and history.
-
 import { getCanvasSize, setCanvasSize, getCurrentTool, getCurrentColor } from './state.js';
 import { createGrid, updateCanvasSize } from './grid.js';
 import { initToolbar } from './tools.js';
 import { attachCursorPreviewHandlers } from './cursor.js';
 import { bindHistoryKeys } from './history.js';
 import { attachDrawingHandlers } from './drawing.js';
+import { loadingScreen } from './loading.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Ensure DOM areas exist (Index.cshtml should include required markup)
+document.addEventListener('DOMContentLoaded', async() => {
+    // Make loading screen globally available first
+    window.loadingScreen = loadingScreen;
+    
+    // Update loading text (screen is already visible from HTML)
+    if (loadingScreen.textElement) {
+        loadingScreen.textElement.textContent = 'Initializing Pixardi...';
+    }
+
+    // Wait minimum duration for loading screen
+    const startTime = Date.now();
+    
     // 1) Build grid DOM for current canvas size
     createGrid();
 
@@ -53,6 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
             module.initProjectControls();
         });
     }
+
+    // Ensure minimum loading time, then hide
+    const elapsed = Date.now() - startTime;
+    const remainingTime = Math.max(0, 1500 - elapsed); // 1.5 seconds minimum
+    
+    setTimeout(() => {
+        loadingScreen.hide();
+    }, remainingTime);
 
     // small debug helpers
     window.appState = {

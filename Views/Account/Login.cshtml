@@ -9,7 +9,7 @@
             <h2>Login</h2>
         </div>
 
-        <form asp-action="Login" method="post">
+        <form asp-action="Login" method="post" onsubmit="showAuthLoading('Logging in...')">
             @Html.AntiForgeryToken()
 
             <div asp-validation-summary="All" class="text-danger"></div>
@@ -55,4 +55,12 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/auth.js" asp-append-version="true"></script>
+
+    <script>
+        function showAuthLoading(message) {
+            if (window.loadingScreen) {
+                window.loadingScreen.showAuth(message);
+            }
+        }
+    </script>
 }
