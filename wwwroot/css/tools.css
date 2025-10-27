@@ -1,4 +1,4 @@
-/* Toolbar - matching original structure */
+/* Toolbar */
 .toolbar {
     display: flex;
     flex-direction: column;
@@ -263,7 +263,7 @@
     .virus-controls {
         width: 160px;
         padding: 12px;
-        left: -180px; /* Adjust for smaller width */
+        left: -180px;
         background: var(--bg-dark-1);
         border: 2px solid var(--panel-border);
     }

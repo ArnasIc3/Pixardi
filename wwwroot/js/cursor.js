@@ -1,9 +1,5 @@
 import { getPixelSize as gridGetPixelSize, getGridElement } from './grid.js';
 
-/**
- * Create or return existing cursor preview element.
- * Returns HTMLElement.
- */
 export function createCursorPreview() {
     let existing = document.getElementById('cursorPreview');
     if (existing) return existing;

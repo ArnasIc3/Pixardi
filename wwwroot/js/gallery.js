@@ -18,22 +18,16 @@ class Gallery {
         }
     }
 
-    // Generate pixel art previews
     generatePreviews() {
-        console.log('Generating previews...');
         const previews = document.querySelectorAll('.pixel-canvas-preview');
-        console.log(`Found ${previews.length} previews to generate`);
         
         previews.forEach(preview => {
             try {
                 const canvasDataRaw = preview.dataset.canvas || '{}';
-                console.log('Canvas data raw:', canvasDataRaw);
-                
                 const canvasData = JSON.parse(canvasDataRaw);
                 const width = parseInt(preview.dataset.width) || 16;
                 const height = parseInt(preview.dataset.height) || 16;
                 
-                console.log(`Generating preview ${width}x${height}`, canvasData);
                 this.generatePreview(preview, canvasData, width, height);
             } catch (error) {
                 console.error('Error parsing canvas data:', error);
@@ -44,10 +38,8 @@ class Gallery {
 
     generatePreview(container, canvasData, width, height) {
         try {
-            // Clear any existing content
             container.innerHTML = '';
 
-            // Calculate optimal size for preview - make it fit the container
             const containerRect = container.getBoundingClientRect();
             const maxWidth = containerRect.width || 200;
             const maxHeight = containerRect.height || 200;
@@ -60,7 +52,6 @@ class Gallery {
             const previewWidth = width * pixelSize;
             const previewHeight = height * pixelSize;
 
-            // Set container size and display
             container.style.width = '100%';
             container.style.height = '100%';
             container.style.display = 'flex';
@@ -68,7 +59,6 @@ class Gallery {
             container.style.justifyContent = 'center';
             container.style.imageRendering = 'pixelated';
 
-            // Create preview grid
             const previewGrid = document.createElement('div');
             previewGrid.style.display = 'grid';
             previewGrid.style.gridTemplateColumns = `repeat(${width}, ${pixelSize}px)`;
@@ -77,13 +67,11 @@ class Gallery {
             previewGrid.style.width = previewWidth + 'px';
             previewGrid.style.height = previewHeight + 'px';
 
-            // Check if canvasData is empty or null
             if (!canvasData || Object.keys(canvasData).length === 0) {
                 this.showPreviewError(container, 'No canvas data');
                 return;
             }
 
-            // Generate pixels
             for (let y = 0; y < height; y++) {
                 for (let x = 0; x < width; x++) {
                     const pixel = document.createElement('div');
@@ -102,8 +90,6 @@ class Gallery {
             }
 
             container.appendChild(previewGrid);
-            console.log(`Preview generated successfully: ${width}x${height}`);
-            
         } catch (error) {
             console.error('Error generating preview:', error);
             this.showPreviewError(container, error.message);
@@ -117,38 +103,29 @@ class Gallery {
         </div>`;
     }
 
-    // Attach event listeners
     attachEventListeners() {
-        console.log('Attaching gallery event listeners...');
-        
-        // Close modal when clicking outside
         document.addEventListener('click', (e) => {
             if (e.target.id === 'commentModal') {
                 this.closeCommentModal();
             }
         });
 
-        // Escape key to close modals
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeCommentModal();
             }
         });
 
-        // Add click handlers to like buttons
         document.querySelectorAll('.like-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 const projectId = btn.getAttribute('data-project-id');
                 if (projectId) {
-                    console.log('Like button clicked for project:', projectId);
                     this.toggleLike(projectId, btn);
                 }
             });
         });
-
-        console.log('Gallery event listeners attached');
     }
 
     // View project details
@@ -158,12 +135,9 @@ class Gallery {
         window.location.href = detailsUrl;
     }
 
-    // Like functionality
     async toggleLike(projectId, buttonElement) {
         try {
-            console.log('Toggling like for project:', projectId);
             const likeUrl = (window.galleryUrls?.like || '/Gallery/Like/') + projectId;
-            console.log('Like URL:', likeUrl);
             
             const response = await fetch(likeUrl, {
                 method: 'POST',
@@ -172,15 +146,12 @@ class Gallery {
                     'RequestVerificationToken': this.getAntiForgeryToken()
                 }
             });
-
-            console.log('Like response status:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const result = await response.json();
-            console.log('Like result:', result);
 
             if (result.success) {
                 const likeCountSpan = buttonElement.querySelector('.like-count');
@@ -197,10 +168,7 @@ class Gallery {
                     buttonElement.classList.remove('liked');
                     if (heartPath) heartPath.setAttribute('fill', 'none');
                 }
-                
-                console.log('Like updated successfully');
             } else {
-                console.error('Like failed:', result.message);
                 this.showMessage('Error: ' + (result.message || 'Unknown error'), 'error');
             }
         } catch (error) {
@@ -263,28 +231,20 @@ class Gallery {
         }
     }
 
-    // Helper methods
     getAntiForgeryToken() {
-        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-        console.log('CSRF Token found:', token ? 'Yes' : 'No');
-        return token || '';
+        return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
     }
 
     showMessage(message, type = 'info') {
-        console.log(`${type.toUpperCase()}: ${message}`);
-        // You can replace this with a toast notification system later
         alert(message);
     }
 }
 
-// Initialize gallery
 const gallery = new Gallery();
 
-// Global functions for onclick handlers (needed for inline event handlers)
+// Global functions for onclick handlers
 window.viewProject = (id) => gallery.viewProject(id);
 window.toggleLike = (projectId, buttonElement) => gallery.toggleLike(projectId, buttonElement);
 window.showCommentModal = (projectId, projectName) => gallery.showCommentModal(projectId, projectName);
 window.closeCommentModal = () => gallery.closeCommentModal();
 window.submitComment = () => gallery.submitComment();
-
-console.log('Gallery initialized');

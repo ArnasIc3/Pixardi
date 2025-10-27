@@ -1,4 +1,4 @@
-/* Cursor preview - matches original #cursorPreview */
+/* Cursor preview */
 #cursorPreview {
     position: fixed;
     pointer-events: none;
@@ -32,7 +32,7 @@
     box-shadow: 0 10px 28px rgba(0,0,0,0.55);
 }
 
-/* optional small cross when using very small pixels */
+/* small cross when using very small pixels */
 #cursorPreview.cross::after {
     content: "";
     position: absolute;

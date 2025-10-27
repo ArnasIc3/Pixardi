@@ -1,13 +1,9 @@
-// Basic drawing primitives and mouse event coordination - pixel-level operations
-
 import { queryPixel, getGridElement } from './grid.js';
 import { getCanvasSize, getCurrentColor, getCurrentTool } from './state.js';
 import { startAction, recordPixelChange, endAction } from './history.js';
 
 /**
- * Normalize a CSS color string for simple equality checks.
- * This is a lightweight normalizer: prefers hex when possible,
- * but falls back to trimmed lower-case input.
+ * Normalize CSS color to hex format
  */
 export function normalizeColor(color) {
     if (!color) return '';
@@ -26,9 +22,6 @@ export function normalizeColor(color) {
     return s.toLowerCase();
 }
 
-/**
- * Return orthogonal neighbors inside canvas bounds.
- */
 export function getNeighbors(x, y) {
     const { width, height } = getCanvasSize();
     const neighbors = [];

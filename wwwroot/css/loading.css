@@ -1,4 +1,4 @@
-/* Loading Screen - Updated to use ID selector */
+/* Loading Screen */
 #loadingScreen {
     position: fixed;
     top: 0;
@@ -21,7 +21,7 @@
     background: #000000; 
 }
 
-/* Fade out state - smoother transition */
+/* Fade out state */
 #loadingScreen.fade-out {
     opacity: 0;
     visibility: hidden;
