@@ -192,7 +192,7 @@ namespace Pixardi.Controllers
             return Json(new { success = true, isPublic = project.IsPublic, projectName = project.Name });
         }
 
-        // TEST ENDPOINT - Create sample data (remove after testing)
+        // TEST ENDPOINT 
         public async Task<IActionResult> CreateSampleData()
         {
             if (_context.Projects.Any(p => p.IsPublic))
