@@ -15,6 +15,9 @@ namespace Pixardi.Data
         public DbSet<Like> Likes { get; set; }
         public DbSet<Comment> Comments { get; set; }
 
+        public DbSet<CanvasPixel> CanvasPixels { get; set; }
+        public DbSet<UserCooldown> UserCooldowns { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

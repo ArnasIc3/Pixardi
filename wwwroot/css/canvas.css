@@ -1,0 +1,322 @@
+.canvas-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.canvas-layout {
+    display: flex;
+    gap: 20px;
+    min-height: 600px;
+    align-items: flex-start; /* Align items to top */
+}
+
+.canvas-sidebar {
+    width: 110px;
+    min-height: 520px; /* Set a minimum height to contain all colors */
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 10px 5px 10px 5px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.canvas-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.color-palette {
+    margin-bottom: 15px;
+    width: 100%;
+    flex-grow: 1; /* Allow it to grow to fill available space */
+}
+
+.color-palette h5 {
+    margin-bottom: 10px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center; /* Center the heading */
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+    justify-items: center; /* Center the grid items */
+    margin-left: 46px;
+    padding-right: 10px;
+}
+
+.color-swatch {
+    width: 40px; 
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.color-swatch:hover {
+    transform: scale(1.02); /* Reduced scale to prevent overflow */
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.color-swatch[data-color="#FFFFFF"] {
+    border-color: rgba(0, 0, 0, 0.5);
+}
+
+.color-swatch[data-color="#FFFFFF"]:hover {
+    border-color: rgba(0, 0, 0, 0.8);
+}
+
+.color-info {
+    margin-bottom: 15px; /* Reduced margin */
+    width: 100%;
+}
+
+.color-info p {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #fff;
+    font-size: 12px; /* Smaller font */
+}
+
+.current-color-display {
+    display: inline-block;
+    width: 25px; /* Smaller display */
+    height: 25px;
+    background-color: #000000;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+}
+
+.user-info {
+    width: 100%;
+}
+
+.user-info p {
+    font-weight: 500;
+    color: #fff;
+    font-size: 12px; /* Smaller font */
+}
+
+#drawingCanvas {
+    border: 2px solid #333;
+    cursor: crosshair;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.canvas-disabled {
+    cursor: not-allowed !important;
+    opacity: 0.7;
+}
+
+.cooldown-container {
+    text-align: center;
+    margin-top: 15px;
+    padding: 12px 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    min-width: 300px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cooldown-text {
+    color: #ff6b6b;
+}
+
+.ready-text {
+    color: #51cf66;
+}
+
+.info-button-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.info-button {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.info-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.info-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    background-color: rgba(33, 37, 41, 0.95);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+    min-width: 320px;
+    max-width: 400px;
+}
+
+.info-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid rgba(33, 37, 41, 0.95);
+}
+
+.info-tooltip h5 {
+    margin-bottom: 12px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.info-tooltip ul {
+    margin: 0;
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+.info-tooltip li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.color-option {
+    display: none;
+}
+
+.admin-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.admin-mode-indicator {
+    background: linear-gradient(135deg, #ffd700, #ffed4a);
+    color: #333;
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.admin-tools {
+    margin-bottom: 15px;
+}
+
+.admin-tools h6 {
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.tool-btn {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s ease;
+}
+
+.tool-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.tool-btn.active {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.mode-info {
+    margin-top: 15px;
+}
+
+.mode-info p {
+    font-weight: 500;
+    color: #fff;
+    font-size: 12px;
+}
+
+.admin-status {
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: rgba(40, 167, 69, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .canvas-layout {
+        flex-direction: column;
+    }
+    
+    .canvas-sidebar {
+        width: 100%;
+        order: 2;
+    }
+    
+    .canvas-main {
+        order: 1;
+    }
+    
+    .info-tooltip {
+        right: -150px;
+        min-width: 280px;
+    }
+    
+    .color-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .color-swatch {
+        width: 40px;
+        height: 40px;
+    }
+}

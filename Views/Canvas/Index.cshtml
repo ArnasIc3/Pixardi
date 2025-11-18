@@ -1,0 +1,103 @@
+@{
+    ViewData["Title"] = "Admin Canvas";
+}
+
+<link rel="stylesheet" href="~/css/canvas.css" asp-append-version="true" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+<div class="container-fluid">
+    <div class="canvas-header">
+        <h1>Admin Canvas Control</h1>
+        <div class="admin-controls">
+            <button id="clearCanvasBtn" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Clear Canvas
+            </button>
+            <a href="@Url.Action("Index", "Canvas")" class="btn btn-secondary">
+                <i class="fas fa-eye"></i> View Normal Canvas
+            </a>
+        </div>
+    </div>
+
+    <div class="canvas-layout">
+        <!-- Left sidebar: Color palette + Admin tools -->
+        <div class="canvas-sidebar">
+            <div class="admin-mode-indicator">
+                <h6><i class="fas fa-crown"></i> Admin Mode</h6>
+            </div>
+
+            <div class="admin-tools">
+                <h6>Tools</h6>
+                <button id="deleteModeBtn" class="tool-btn" data-mode="delete">
+                    <i class="fas fa-eraser"></i> Delete Mode
+                </button>
+                <button id="addModeBtn" class="tool-btn active" data-mode="add">
+                    <i class="fas fa-paint-brush"></i> Add Mode
+                </button>
+            </div>
+
+            <div class="color-palette">
+                <div class="color-grid">
+                    <div class="color-swatch" data-color="#000000" style="background-color: #000000;" title="Black">
+                    </div>
+                    <div class="color-swatch" data-color="#FFFFFF" style="background-color: #FFFFFF;" title="White">
+                    </div>
+                    <div class="color-swatch" data-color="#FF0000" style="background-color: #FF0000;" title="Red"></div>
+                    <div class="color-swatch" data-color="#00FF00" style="background-color: #00FF00;" title="Green">
+                    </div>
+                    <div class="color-swatch" data-color="#0000FF" style="background-color: #0000FF;" title="Blue">
+                    </div>
+                    <div class="color-swatch" data-color="#FFFF00" style="background-color: #FFFF00;" title="Yellow">
+                    </div>
+                    <div class="color-swatch" data-color="#FF00FF" style="background-color: #FF00FF;" title="Magenta">
+                    </div>
+                    <div class="color-swatch" data-color="#00FFFF" style="background-color: #00FFFF;" title="Cyan">
+                    </div>
+                    <div class="color-swatch" data-color="#FFA500" style="background-color: #FFA500;" title="Orange">
+                    </div>
+                    <div class="color-swatch" data-color="#800080" style="background-color: #800080;" title="Purple">
+                    </div>
+                    <div class="color-swatch" data-color="#FFC0CB" style="background-color: #FFC0CB;" title="Pink">
+                    </div>
+                    <div class="color-swatch" data-color="#A52A2A" style="background-color: #A52A2A;" title="Brown">
+                    </div>
+                    <div class="color-swatch" data-color="#808080" style="background-color: #808080;" title="Gray">
+                    </div>
+                    <div class="color-swatch" data-color="#90EE90" style="background-color: #90EE90;"
+                        title="Light Green"></div>
+                    <div class="color-swatch" data-color="#87CEEB" style="background-color: #87CEEB;" title="Sky Blue">
+                    </div>
+                    <div class="color-swatch" data-color="#DDA0DD" style="background-color: #DDA0DD;" title="Plum">
+                    </div>
+                </div>
+            </div>
+
+            <div class="color-info">
+                <p>Current Color:</p>
+                <span id="currentColor" class="current-color-display"></span>
+            </div>
+
+            <div class="mode-info">
+                <p>Mode: <span id="currentMode">Add</span></p>
+            </div>
+        </div>
+
+        <!-- Main canvas area -->
+        <div class="canvas-main">
+            <canvas id="drawingCanvas" width="1000" height="600"></canvas>
+
+            <div class="admin-status">
+                <p class="text-success">✅ Admin privileges active - No cooldowns</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Add CSRF token *@
+<form>
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script src="https://unpkg.com/@@microsoft/signalr@@latest/dist/browser/signalr.min.js"></script>
+    <script src="~/js/admin-canvas.js" asp-append-version="true"></script>
+}
