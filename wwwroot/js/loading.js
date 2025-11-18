@@ -3,7 +3,7 @@ class LoadingScreen {
         this.element = document.getElementById('loadingScreen');
         this.textElement = document.getElementById('loadingText');
         this.isVisible = false;
-        this.minDuration = 1500; // Total duration is now 2.5 seconds
+        this.minDuration = 2000; // Total duration is now 2.5 seconds
     }
 
     show(text = 'Loading...', variant = '') {
@@ -30,7 +30,7 @@ class LoadingScreen {
             this.element.classList.add('active');
             
             // Remove any previous fade classes to ensure black background
-            this.element.classList.remove('fade-background', 'fade-content');
+            this.element.classList.remove('fade-background', 'fade-content', 'fade-out');
 
             // Resolve after minimum duration
             const elapsed = Date.now() - startTime;
@@ -46,42 +46,59 @@ class LoadingScreen {
     hide() {
         if (!this.element) return;
 
-        // Start the layered fade-out process with exact timing
-        this.startFadeOut();
+        // Add fade-out class for smooth exit animation
+        this.element.classList.add('fade-out');
+        
+        console.log('Starting fade-out animation');
+        
+        // Remove the loading screen after animation completes
+        setTimeout(() => {
+            this.element.classList.remove('active', 'fade-background', 'fade-content', 'fade-out');
+            
+            // Force hide with inline styles as backup
+            this.element.style.opacity = '0';
+            this.element.style.visibility = 'hidden';
+            this.element.style.display = 'none';
+            this.element.style.zIndex = '-1';
+            
+            // Remove variant classes
+            this.element.classList.remove('auth');
+            
+            // Reset text
+            if (this.textElement) {
+                this.textElement.textContent = 'Loading...';
+            }
+
+            this.isVisible = false;
+            
+            console.log('Loading screen hidden with fade-out animation');
+        }, 600); // Match the CSS transition duration
     }
 
-    startFadeOut() {
-        // Ensure element stays black for first 2 seconds
-        // Step 1: Fade background at exactly 2 seconds
-        setTimeout(() => {
-            if (this.element && this.element.classList.contains('active')) {
-                this.element.classList.add('fade-background');
-            }
-        }, 2000);
+    // Add a method for immediate hiding without animation (if needed)
+    hideImmediately() {
+        if (!this.element) return;
 
-        // Step 2: Fade content at exactly 2.5 seconds
-        setTimeout(() => {
-            if (this.element && this.element.classList.contains('active')) {
-                this.element.classList.add('fade-content');
-            }
-        }, 2500);
+        // Immediately hide the loading screen without animation
+        this.element.classList.remove('active', 'fade-background', 'fade-content', 'fade-out');
+        
+        // Force hide with inline styles as backup
+        this.element.style.opacity = '0';
+        this.element.style.visibility = 'hidden';
+        this.element.style.display = 'none';
+        this.element.style.zIndex = '-1';
+        
+        // Remove variant classes
+        this.element.classList.remove('auth');
+        
+        // Reset text
+        if (this.textElement) {
+            this.textElement.textContent = 'Loading...';
+        }
 
-        // Step 3: Completely hide at 3 seconds
-        setTimeout(() => {
-            if (this.element) {
-                this.element.classList.remove('active', 'fade-background', 'fade-content');
-                
-                // Remove variant classes
-                this.element.classList.remove('auth');
-                
-                // Reset text
-                if (this.textElement) {
-                    this.textElement.textContent = 'Loading...';
-                }
-
-                this.isVisible = false;
-            }
-        }, 3000);
+        this.isVisible = false;
+        
+        console.log('Loading screen hidden immediately');
     }
 
     showAuth(text = 'Authenticating...') {
@@ -99,3 +116,8 @@ class LoadingScreen {
 
 // Create singleton instance
 export const loadingScreen = new LoadingScreen();
+
+// Add global functions for backward compatibility
+window.showLoading = (text) => loadingScreen.show(text);
+window.hideLoading = () => loadingScreen.hide();
+window.hideLoadingImmediately = () => loadingScreen.hideImmediately();

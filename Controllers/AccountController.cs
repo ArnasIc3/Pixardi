@@ -126,7 +126,7 @@ namespace Pixardi.Controllers
             return View(model);
         }
 
-        // optional: Logout
+        // Logout
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

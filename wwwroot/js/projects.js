@@ -12,20 +12,44 @@ export function initProjectControls() {
         return;
     }
     
+    console.log('Initializing project controls...');
+    
     const saveBtn = document.getElementById('saveProjectBtn');
     const loadBtn = document.getElementById('loadProjectBtn');
     const downloadBtn = document.getElementById('downloadPngBtn');
+    const shareBtn = document.getElementById('shareProjectBtn');
 
-    if (saveBtn) saveBtn.addEventListener('click', handleSaveProject);
-    if (loadBtn) loadBtn.addEventListener('click', handleLoadProject);
-    if (downloadBtn) downloadBtn.addEventListener('click', handleDownloadPng);
+    console.log('Button elements found:', {
+        saveBtn: !!saveBtn,
+        loadBtn: !!loadBtn,
+        downloadBtn: !!downloadBtn,
+        shareBtn: !!shareBtn
+    });
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', handleSaveProject);
+        console.log('Save button event listener attached');
+    }
+    if (loadBtn) {
+        loadBtn.addEventListener('click', handleLoadProject);
+        console.log('Load button event listener attached');
+    }
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', handleDownloadPng);
+        console.log('Download button event listener attached');
+    }
+    if (shareBtn) {
+        shareBtn.addEventListener('click', handleShareProject);
+        console.log('Share button event listener attached');
+    }
     
     initialized = true;
-    console.log('Project controls initialized');
+    console.log('Project controls initialization complete');
 }
 
 // Save project to server
 async function handleSaveProject() {
+    console.log('Save project button clicked');
     try {
         const projectName = await showSaveModal();
         if (!projectName) return;
@@ -68,6 +92,7 @@ async function handleSaveProject() {
 
 // Load project from server
 async function handleLoadProject() {
+    console.log('Load project button clicked');
     try {
         // First get list of projects
         const listResponse = await fetch('/Project/List');
@@ -108,6 +133,7 @@ async function handleLoadProject() {
 
 // Download canvas as PNG (client-side generation with high quality)
 async function handleDownloadPng() {
+    console.log('Download PNG button clicked');
     try {
         const canvasSize = getCanvasSize();
         const downloadOptions = await showDownloadModal(canvasSize);
@@ -276,6 +302,68 @@ function rgbToHex(rgb) {
         const hex = parseInt(x).toString(16);
         return hex.length === 1 ? '0' + hex : hex;
     }).join('');
+}
+
+// Share project to gallery (make it public)
+async function handleShareProject() {
+    console.log('Share project button clicked');
+    try {
+        // First, check if user has any saved projects
+        const listResponse = await fetch('/Project/List');
+        const listResult = await listResponse.json();
+
+        if (!listResult.success || listResult.projects.length === 0) {
+            modalManager.show('loadModal');
+            modalManager.showMessage('loadModal', 'No saved projects found. Please save a project first.', 'error');
+            return;
+        }
+
+        // Show project selection modal
+        const selectedProject = await showLoadModal(listResult.projects);
+        if (!selectedProject) return; // User cancelled
+
+        // Show loading screen while sharing
+        const loadingPromise = loadingScreen.showLoading(`Sharing "${selectedProject.name}" to gallery...`);
+
+        // Share the selected project (make it public)
+        const shareResponse = await fetch('/Gallery/TogglePublic/' + selectedProject.name, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+            }
+        });
+
+        const shareResult = await shareResponse.json();
+
+        // Wait for minimum loading duration
+        await loadingPromise;
+        loadingScreen.hide();
+
+        if (shareResult.success) {
+            if (shareResult.isPublic) {
+                modalManager.show('loadModal');
+                modalManager.showMessage('loadModal', `"${selectedProject.name}" is now shared in the gallery! 🎨`, 'success');
+                setTimeout(() => {
+                    modalManager.closeAll();
+                    // Optionally redirect to gallery
+                    if (confirm('Would you like to view it in the gallery?')) {
+                        window.location.href = '/Gallery';
+                    }
+                }, 2000);
+            } else {
+                modalManager.show('loadModal');
+                modalManager.showMessage('loadModal', `"${selectedProject.name}" has been removed from the gallery.`, 'success');
+                setTimeout(() => modalManager.closeAll(), 1500);
+            }
+        } else {
+            modalManager.showMessage('loadModal', `Error: ${shareResult.message}`, 'error');
+        }
+    } catch (error) {
+        loadingScreen.hide();
+        console.error('Share error:', error);
+        modalManager.showMessage('loadModal', 'Failed to share project', 'error');
+    }
 }
 
 // Note: Initialization is handled by main.js dynamic import

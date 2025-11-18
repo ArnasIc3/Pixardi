@@ -1,5 +1,3 @@
-// Tools UI bindings and tool implementations (floodFill, pixelVirus, etc.)
-
 import { setCurrentTool, setCurrentColor, getCurrentTool, getCurrentColor, getCanvasSize, on as onState } from './state.js';
 import { undo, startAction, recordPixelChange, endAction } from './history.js';
 import { attachCursorPreviewHandlers } from './cursor.js';
@@ -7,14 +5,12 @@ import { queryPixel, getGridElement } from './grid.js';
 import { paintPixelAtWithColor, normalizeColor, getNeighbors } from './drawing.js';
 
 /**
- * Initialize toolbar: wire tool items, color options and action buttons.
- * Call once after DOM is ready (main.js should call this).
+ * Initialize toolbar with event listeners
  */
 export function initToolbar() {
     const toolItems = Array.from(document.querySelectorAll('.tool-item[data-tool]'));
     const colorOptions = Array.from(document.querySelectorAll('.color-option[data-color]'));
 
-    // Tool clicks
     toolItems.forEach(t => {
         t.addEventListener('click', (ev) => {
             const tool = t.dataset.tool;
@@ -23,7 +19,6 @@ export function initToolbar() {
         });
     });
 
-    // Color clicks
     colorOptions.forEach(c => {
         c.addEventListener('click', (ev) => {
             const color = c.dataset.color;
@@ -32,46 +27,36 @@ export function initToolbar() {
         });
     });
 
-    // Action buttons
     const undoBtn = document.getElementById('undoBtn');
     if (undoBtn) undoBtn.addEventListener('click', (e) => { e.preventDefault(); undo(); });
 
     const clearBtn = document.getElementById('clearBtn');
     if (clearBtn) clearBtn.addEventListener('click', (e) => { e.preventDefault(); clearCanvas(); });
 
-    // reflect initial state in UI
     refreshToolUI();
     refreshColorUI();
 
-    // keep UI in sync if state changes elsewhere
-    onState('tool', () => refreshToolUI());
+    onState('tool', () => {
+        refreshToolUI();
+        updateVirusControlsVisibility();
+    });
     onState('color', () => refreshColorUI());
 
-    // ensure cursor preview handlers are attached (idempotent)
-    try { attachCursorPreviewHandlers(); } catch (e) { /* ignore if not available yet */ }
+    initVirusControls();
+    try { attachCursorPreviewHandlers(); } catch (e) { }
 }
 
-/**
- * Select a tool programmatically.
- */
 export function selectTool(toolName) {
     if (!toolName) return;
     setCurrentTool(toolName);
     refreshToolUI();
 }
 
-/**
- * Select a color programmatically.
- */
 export function selectColor(color) {
     if (!color) return;
     setCurrentColor(color);
     refreshColorUI();
 }
-
-
-
-/* --- internal UI helpers --- */
 function refreshToolUI() {
     const active = getCurrentTool();
     const toolItems = Array.from(document.querySelectorAll('.tool-item[data-tool]'));
@@ -119,11 +104,9 @@ export function floodFill(startX, startY, targetColor, fillColor) {
         const currentNorm = normalizeColor(el.style.backgroundColor || '');
         if (currentNorm !== targetColor) continue;
 
-        // record previous and apply fill
         recordPixelChange(x, y, el.style.backgroundColor || '');
         el.style.backgroundColor = fillColor;
 
-        // push neighbors
         const neigh = getNeighbors(x, y);
         for (let i = 0; i < neigh.length; i++) {
             stack.push(neigh[i]);
@@ -140,20 +123,19 @@ export function floodFill(startX, startY, targetColor, fillColor) {
 export function pixelVirus(startX, startY, opts = {}) {
     const grid = getGridElement();
     if (!grid) return;
-    const infectionRate = typeof opts.infectionRate === 'number' ? opts.infectionRate : 0.5;
-    const spreadDelay = typeof opts.spreadDelay === 'number' ? opts.spreadDelay : 40;
-    const maxGenerations = typeof opts.maxGenerations === 'number' ? opts.maxGenerations : 30;
+    
+    const sliderSettings = getVirusSettings();
+    const infectionRate = typeof opts.infectionRate === 'number' ? opts.infectionRate : sliderSettings.infectionRate;
+    const spreadDelay = typeof opts.spreadDelay === 'number' ? opts.spreadDelay : sliderSettings.spreadDelay;
+    const maxGenerations = typeof opts.maxGenerations === 'number' ? opts.maxGenerations : sliderSettings.maxGenerations;
 
     const infectionColor = normalizeColor(opts.color || getCurrentColor() || '#000000');
 
-    // guard: don't run on walls (black) if black is considered barrier
     const startEl = queryPixel(startX, startY);
     const startColor = normalizeColor(startEl?.style.backgroundColor || '');
     if (startColor === '#000000') return;
 
     startAction('virus');
-
-    // infect start
     paintPixelAtWithColor(startX, startY, infectionColor);
     const visited = new Set([`${startX},${startY}`]);
     let frontier = [[startX, startY]];
@@ -206,7 +188,7 @@ export function pixelVirus(startX, startY, opts = {}) {
 }
 
 /**
- * Clear the entire canvas - this is a tool action
+ * Clear the entire canvas
  */
 export function clearCanvas() {
     startAction('clear');
@@ -223,7 +205,80 @@ export function clearCanvas() {
     endAction();
 }
 
-/* Exported helper list (optional for other modules) */
+/**
+ * Initialize virus controls sliders
+ */
+function initVirusControls() {
+    const infectionRateSlider = document.getElementById('infectionRate');
+    const spreadDelaySlider = document.getElementById('spreadDelay');
+    const maxGenerationsSlider = document.getElementById('maxGenerations');
+    
+    const infectionRateValue = document.getElementById('infectionRateValue');
+    const spreadDelayValue = document.getElementById('spreadDelayValue');
+    const maxGenerationsValue = document.getElementById('maxGenerationsValue');
+
+    if (infectionRateSlider && infectionRateValue) {
+        infectionRateSlider.addEventListener('input', (e) => {
+            const value = parseFloat(e.target.value);
+            infectionRateValue.textContent = Math.round(value * 100) + '%';
+        });
+    }
+
+    if (spreadDelaySlider && spreadDelayValue) {
+        spreadDelaySlider.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            spreadDelayValue.textContent = value + 'ms';
+        });
+    }
+
+    if (maxGenerationsSlider && maxGenerationsValue) {
+        maxGenerationsSlider.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            maxGenerationsValue.textContent = value.toString();
+        });
+    }
+}
+
+/**
+ * Toggle virus controls visibility
+ */
+function updateVirusControlsVisibility() {
+    const virusControls = document.getElementById('virusControls');
+    const currentTool = getCurrentTool();
+    
+    if (!virusControls) return;
+    
+    if (currentTool === 'virus') {
+        virusControls.style.display = 'block';
+        virusControls.classList.add('show');
+        virusControls.classList.remove('hide');
+    } else {
+        virusControls.classList.add('hide');
+        virusControls.classList.remove('show');
+        setTimeout(() => {
+            if (!virusControls.classList.contains('show')) {
+                virusControls.style.display = 'none';
+            }
+        }, 300);
+    }
+}
+
+/**
+ * Get virus settings from sliders
+ */
+export function getVirusSettings() {
+    const infectionRate = parseFloat(document.getElementById('infectionRate')?.value || '0.5');
+    const spreadDelay = parseInt(document.getElementById('spreadDelay')?.value || '40');
+    const maxGenerations = parseInt(document.getElementById('maxGenerations')?.value || '30');
+    
+    return {
+        infectionRate,
+        spreadDelay,
+        maxGenerations
+    };
+}
+
+
 export const tools = {
     initToolbar,
     selectTool,
@@ -231,4 +286,5 @@ export const tools = {
     floodFill,
     pixelVirus,
     clearCanvas,
+    getVirusSettings,
 };

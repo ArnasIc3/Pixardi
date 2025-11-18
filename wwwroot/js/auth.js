@@ -1,4 +1,3 @@
-// Robust password visibility toggle — avoids interference and works even if other scripts are present.
 document.addEventListener('DOMContentLoaded', function () {
     try {
         console.log('[auth.js] loaded');

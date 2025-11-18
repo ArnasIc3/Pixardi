@@ -5,7 +5,7 @@
     box-sizing: border-box; 
 }
 
-/* CSS Custom Properties - Global theme variables */
+/* CSS Custom Properties */
 :root {
     --bg-dark-1: #1a0f2e;   /* deep purple */
     --bg-dark-2: #2d1b4e;   /* plum */
@@ -27,16 +27,16 @@ html {
     background: linear-gradient(135deg, var(--bg-dark-1) 0%, var(--bg-dark-2) 25%, var(--bg-dark-3) 50%, var(--bg-dark-2) 75%, var(--bg-dark-1) 100%);
     background-size: 400% 400%;
     animation: gradientShift 10s ease-in-out infinite;
-    background-attachment: fixed; /* reduces white flash on scroll */
+    background-attachment: fixed;
     background-color: var(--bg-dark-1); /* fallback */
     overscroll-behavior: contain; /* avoid bounce revealing white */
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: transparent; /* gradient handled by html to cover full page */
+    background: transparent; 
     min-height: 100vh;
-    min-height: 100svh; /* better mobile handling */
+    min-height: 100svh; 
     color: var(--text);
     overflow-x: hidden;
     display: flex;
