@@ -8,17 +8,17 @@ namespace Pixardi.Models
 
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public int Width { get; set; }
         public int Height { get; set; }
 
         [Required]
-        public string CanvasData { get; set; }
+        public string CanvasData { get; set; } = string.Empty;
 
         [Required]
-        public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public ApplicationUser? User { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

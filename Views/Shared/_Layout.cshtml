@@ -107,9 +107,9 @@
     }
 
     <!-- Authentication Navigation -->
-    <nav class="auth-nav">
-        @if (User.Identity?.IsAuthenticated == true)
-        {
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <nav class="auth-nav">
             <div class="user-info">
                 <span> @(ViewData["UserDisplayName"] ?? User.Identity.Name)</span>
                 <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
@@ -117,15 +117,17 @@
                     <button type="submit" class="auth-btn logout-btn">Logout</button>
                 </form>
             </div>
-        }
-        else
-        {
+        </nav>
+    }
+    else if (!isCanvasPage)
+    {
+        <nav class="auth-nav">
             <div class="auth-buttons">
                 <a asp-controller="Account" asp-action="Login" class="auth-btn login-btn">Login</a>
                 <a asp-controller="Account" asp-action="Register" class="auth-btn register-btn">Register</a>
             </div>
-        }
-    </nav>
+        </nav>
+    }
 
     <!-- Modal Overlays -->
     <div id="modalOverlay" class="modal-overlay">

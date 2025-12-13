@@ -77,11 +77,14 @@ namespace Pixardi.Controllers
 
             // Check if current user liked this project
             ViewBag.UserHasLiked = false;
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 var userId = _userManager.GetUserId(User);
-                ViewBag.UserHasLiked = await _context.Likes
-                    .AnyAsync(l => l.ProjectId == id && l.UserId == userId);
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    ViewBag.UserHasLiked = await _context.Likes
+                        .AnyAsync(l => l.ProjectId == id && l.UserId == userId);
+                }
             }
 
             return View(project);
@@ -93,6 +96,10 @@ namespace Pixardi.Controllers
         public async Task<IActionResult> Like(int id)
         {
             var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated" });
+            }
             var project = await _context.Projects.FindAsync(id);
 
             if (project == null || !project.IsPublic)
@@ -147,7 +154,16 @@ namespace Pixardi.Controllers
             }
 
             var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated" });
+            }
+
             var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User account not found" });
+            }
 
             var comment = new Comment
             {
@@ -166,7 +182,7 @@ namespace Pixardi.Controllers
                 {
                     id = comment.Id,
                     content = comment.Content,
-                    userName = user.DisplayName ?? user.Email,
+                    userName = user.DisplayName ?? user.Email ?? "Unknown user",
                     createdAt = comment.CreatedAt.ToString("MMM dd, yyyy 'at' HH:mm")
                 }
             });
@@ -178,6 +194,10 @@ namespace Pixardi.Controllers
         public async Task<IActionResult> TogglePublic(string id)
         {
             var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated" });
+            }
             var project = await _context.Projects
                 .FirstOrDefaultAsync(p => p.Name == id && p.UserId == userId);
 

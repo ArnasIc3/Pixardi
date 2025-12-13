@@ -31,7 +31,7 @@
 
                 <div class="project-info">
                     <h3 class="project-title">@project.Name</h3>
-                    <p class="project-author">by @(project.User.DisplayName ?? project.User.Email)</p>
+                    <p class="project-author">by @(project.User?.DisplayName ?? project.User?.Email ?? "Unknown artist")</p>
 
                     <div class="project-stats">
                         <span class="stat">

@@ -1,8 +1,101 @@
 .canvas-header {
     display: flex;
-    justify-content: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.canvas-title-stack {
+    max-width: 520px;
+}
+
+.canvas-eyebrow {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 6px;
+}
+
+.canvas-title {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+}
+
+.canvas-subtitle {
+    margin: 10px 0 0;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.4;
+}
+
+.auth-banner {
+    display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(16px);
+}
+
+.auth-banner-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #fff;
+}
+
+.auth-banner-text strong {
+    font-size: 14px;
+    letter-spacing: 0.05em;
+}
+
+.auth-banner-text span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.auth-banner-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.banner-btn {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.banner-btn.primary {
+    background: #7c4dff;
+    border-color: #7c4dff;
+    color: #fff;
+}
+
+.banner-btn.primary:hover {
+    filter: brightness(1.1);
+}
+
+.banner-btn.ghost {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+}
+
+.banner-btn.ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .canvas-layout {
@@ -13,16 +106,18 @@
 }
 
 .canvas-sidebar {
-    width: 110px;
+    width: 260px;
     min-height: 520px; /* Set a minimum height to contain all colors */
     background-color: rgba(255, 255, 255, 0.1);
-    padding: 10px 5px 10px 5px;
+    padding: 20px 18px 24px 18px;
     border-radius: 8px;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
     flex-direction: column;
     box-sizing: border-box; /* Include padding in width calculation */
+    gap: 12px;
+    align-items: center;
 }
 
 .canvas-main {
@@ -30,12 +125,158 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 }
+
+.canvas-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.zoom-btn {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.zoom-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.canvas-container {
+    overflow: auto;
+    border: 2px solid #333;
+    border-radius: 4px;
+    background: #fff;
+    max-width: 100%;
+    max-height: 70vh;
+    cursor: grab;
+}
+
+.canvas-container:active {
+    cursor: grabbing;
+}
+
 
 .color-palette {
     margin-bottom: 15px;
     width: 100%;
-    flex-grow: 1; /* Allow it to grow to fill available space */
+    flex-grow: 1;
+}
+
+.color-wheel-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    width: 100%;
+}
+
+
+.color-wheel-visual {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    cursor: crosshair;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 210px;
+    min-width: 210px;
+}
+
+.color-wheel-visual canvas {
+    width: 100%;
+    height: 100%;
+    min-width: 220px;
+    min-height: 220px;
+    display: block;
+    border-radius: 50%;
+    touch-action: none;
+    position: relative;
+    z-index: 1;
+}
+
+.color-wheel-visual canvas:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 4px;
+}
+
+
+.color-wheel-native-btn {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: transparent;
+    color: #fff;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.color-wheel-native-btn:hover {
+    border-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.color-wheel-native-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+}
+
+.color-wheel-meta {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.color-wheel-meta span {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.color-wheel-meta small {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.palette-heading {
+    margin-bottom: 12px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.palette-heading .eyebrow {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.palette-heading p {
+    margin: 0;
+    font-size: 13px;
 }
 
 .color-palette h5 {
@@ -48,17 +289,17 @@
 
 .color-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(44px, 1fr));
+    gap: 10px 14px;
     width: 100%;
-    justify-items: center; /* Center the grid items */
-    margin-left: 46px;
-    padding-right: 10px;
+    justify-items: center;
+    margin: 0 auto;
+    padding: 0 6px;
 }
 
 .color-swatch {
-    width: 40px; 
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 6px;
     cursor: pointer;
@@ -117,6 +358,8 @@
     background-color: white;
     border-radius: 4px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 .canvas-disabled {

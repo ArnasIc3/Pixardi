@@ -16,6 +16,7 @@ namespace Pixardi.Controllers
             _context = context;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
@@ -35,14 +36,14 @@ namespace Pixardi.Controllers
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             var now = DateTime.UtcNow;
-            var cooldownMinutes = 2;
+            var cooldownSeconds = 30;
 
             if (userCooldown != null)
             {
                 var timeSinceLastPixel = now - userCooldown.LastPixelTime;
-                if (timeSinceLastPixel.TotalMinutes < cooldownMinutes)
+                if (timeSinceLastPixel.TotalSeconds < cooldownSeconds)
                 {
-                    var remainingTime = TimeSpan.FromMinutes(cooldownMinutes) - timeSinceLastPixel;
+                    var remainingTime = TimeSpan.FromSeconds(cooldownSeconds) - timeSinceLastPixel;
                     return BadRequest(new
                     {
                         message = "Cooldown active",
@@ -91,6 +92,7 @@ namespace Pixardi.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCooldownStatus()
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -109,18 +111,19 @@ namespace Pixardi.Controllers
 
             var now = DateTime.UtcNow;
             var timeSinceLastPixel = now - userCooldown.LastPixelTime;
-            var cooldownMinutes = 2;
+            var cooldownSeconds = 30;
 
-            if (timeSinceLastPixel.TotalMinutes >= cooldownMinutes)
+            if (timeSinceLastPixel.TotalSeconds >= cooldownSeconds)
             {
                 return Json(new { canPlace = true, remainingSeconds = 0 });
             }
 
-            var remainingTime = TimeSpan.FromMinutes(cooldownMinutes) - timeSinceLastPixel;
+            var remainingTime = TimeSpan.FromSeconds(cooldownSeconds) - timeSinceLastPixel;
             return Json(new { canPlace = false, remainingSeconds = (int)remainingTime.TotalSeconds });
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCanvas()
         {
             var pixels = await _context.CanvasPixels.ToListAsync();

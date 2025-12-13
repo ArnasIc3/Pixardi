@@ -107,8 +107,8 @@ app.Run();
 // Admin seeder method
 static async Task CreateInitialAdmin(UserManager<ApplicationUser> userManager)
 {
-    var adminEmail = "admin"; // Change this to your desired admin email
-    var adminPassword = "adminadmin"; // Change this to a secure password
+    var adminEmail = "admin@admin.com"; 
+    var adminPassword = "adminadmin"; 
 
     Console.WriteLine("Checking for admin user...");
 

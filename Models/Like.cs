@@ -8,11 +8,11 @@ namespace Pixardi.Models
 
         [Required]
         public int ProjectId { get; set; }
-        public Project Project { get; set; }
+        public Project? Project { get; set; }
 
         [Required]
-        public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public ApplicationUser? User { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }

@@ -7,6 +7,7 @@ using Pixardi.Models;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text.Json;
+using System.Runtime.Versioning;
 
 namespace Pixardi.Controllers
 {
@@ -72,7 +73,8 @@ namespace Pixardi.Controllers
                 if (project == null)
                     return Json(new { success = false, message = "Project not found." });
 
-                var canvasData = JsonSerializer.Deserialize<Dictionary<string, object>>(project.CanvasData);
+                var canvasData = JsonSerializer.Deserialize<Dictionary<string, object>>(project.CanvasData)
+                    ?? new Dictionary<string, object>();
 
                 return Json(new
                 {
@@ -124,7 +126,8 @@ namespace Pixardi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DownloadPng([FromBody] DownloadRequest request)
+        [SupportedOSPlatform("windows")]
+        public IActionResult DownloadPng([FromBody] DownloadRequest request)
         {
             try
             {
@@ -162,6 +165,10 @@ namespace Pixardi.Controllers
         public async Task<IActionResult> CreateSample()
         {
             var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
 
             // Create a simple test project
             var sampleProject = new Project
