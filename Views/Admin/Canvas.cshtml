@@ -2,6 +2,18 @@
     ViewData["Title"] = "Admin Canvas";
 }
 
+@* 
+    Admin Canvas - Image Import Feature
+    
+    How to use:
+    1. Click "Select Image" to choose an image file (PNG, JPG, GIF, BMP)
+    2. Set the starting position (X, Y) in grid coordinates (0-199 for X, 0-119 for Y)
+    3. Set the max width in pixels to scale the image (default: 50)
+    4. Click "Import to Canvas" to place the image on the canvas
+    
+    Note: Transparent pixels (alpha < 128) are automatically skipped
+*@
+
 <link rel="stylesheet" href="~/css/canvas.css" asp-append-version="true" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
@@ -32,6 +44,56 @@
                 <button id="addModeBtn" class="tool-btn active" data-mode="add">
                     <i class="fas fa-paint-brush"></i> Add Mode
                 </button>
+            </div>
+
+            <div class="admin-tools">
+                <h6>Image Import</h6>
+                <div class="image-import-controls">
+                    <input type="file" id="imageFileInput"
+                        accept="image/png,image/jpeg,image/jpg,image/gif,image/bmp,image/webp" style="display: none;">
+                    <button id="selectImageBtn" class="tool-btn">
+                        <i class="fas fa-image"></i> Select Image
+                    </button>
+                    <small style="display: block; color: rgba(255, 255, 255, 0.6); font-size: 10px; margin-top: 5px;">
+                        Supported: PNG, JPEG, GIF, BMP, WebP
+                    </small>
+
+                    <div id="imagePreviewSection" style="display: none; margin-top: 10px;">
+                        <img id="imagePreview" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px;">
+
+                        <div style="margin-top: 10px;">
+                            <label style="display: block; font-size: 12px; margin-bottom: 5px;">
+                                Start X (Grid)
+                                <input type="number" id="startXInput" value="0" min="0" max="199"
+                                    style="width: 100%; padding: 5px; margin-top: 3px;">
+                            </label>
+
+                            <label style="display: block; font-size: 12px; margin-bottom: 5px; margin-top: 8px;">
+                                Start Y (Grid)
+                                <input type="number" id="startYInput" value="0" min="0" max="119"
+                                    style="width: 100%; padding: 5px; margin-top: 3px;">
+                            </label>
+
+                            <label style="display: block; font-size: 12px; margin-bottom: 5px; margin-top: 8px;">
+                                Max Width (pixels)
+                                <input type="number" id="maxWidthInput" value="50" min="1" max="200"
+                                    style="width: 100%; padding: 5px; margin-top: 3px;">
+                            </label>
+                        </div>
+
+                        <button id="importImageBtn" class="tool-btn"
+                            style="width: 100%; margin-top: 10px; background: #28a745;">
+                            <i class="fas fa-upload"></i> Import to Canvas
+                        </button>
+
+                        <button id="cancelImageBtn" class="tool-btn"
+                            style="width: 100%; margin-top: 5px; background: #6c757d;">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+
+                        <div id="importStatus" style="margin-top: 10px; font-size: 12px;"></div>
+                    </div>
+                </div>
             </div>
 
             <h2 class="canvas-eyebrow">Color Picker</h2>

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Pixardi.Data;
 using Pixardi.Models;
 using Pixardi.Hubs;
+using SixLabors.ImageSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,8 +108,8 @@ app.Run();
 // Admin seeder method
 static async Task CreateInitialAdmin(UserManager<ApplicationUser> userManager)
 {
-    var adminEmail = "admin@admin.com"; 
-    var adminPassword = "adminadmin"; 
+    var adminEmail = "admin@admin.com";
+    var adminPassword = "adminadmin";
 
     Console.WriteLine("Checking for admin user...");
 

@@ -42,19 +42,50 @@ if (!canvasApp || !canvas) {
 
     const connection = new signalR.HubConnectionBuilder()
         .withUrl('/drawingHub')
+        .configureLogging(signalR.LogLevel.Information)
+        .withAutomaticReconnect()
         .build();
+
+    // SignalR connection status monitoring
+    connection.onclose((error) => {
+        console.error('❌ SignalR connection closed', error);
+        showConnectionStatus('Disconnected', false);
+    });
+
+    connection.onreconnecting((error) => {
+        console.warn('🔄 SignalR reconnecting...', error);
+        showConnectionStatus('Reconnecting...', false);
+    });
+
+    connection.onreconnected((connectionId) => {
+        console.log('✅ SignalR reconnected', connectionId);
+        showConnectionStatus('Connected', true);
+        connection.invoke('JoinCanvas', 'main');
+    });
 
     connection.start()
         .then(() => {
-            connection.invoke('JoinCanvas', 'main');
+            console.log('✅ SignalR connection established');
+            console.log('Connection ID:', connection.connectionId);
+            console.log('Connection State:', connection.state);
+            showConnectionStatus('Connected', true);
+            
+            connection.invoke('JoinCanvas', 'main')
+                .then(() => console.log('✅ Joined canvas group'))
+                .catch(err => console.error('❌ Failed to join canvas:', err));
+            
             loadCanvas();
             if (!isAdmin) {
                 fetchCooldownStatus();
             }
         })
-        .catch(err => console.error('SignalR connection failed: ', err));
+        .catch(err => {
+            console.error('❌ SignalR connection failed: ', err);
+            showConnectionStatus('Connection Failed', false);
+        });
 
     connection.on('PixelDrawn', (x, y, color) => {
+        console.log('📨 Received PixelDrawn event:', { x, y, color });
         const existingIndex = pixelCache.findIndex(p => p.x === x && p.y === y);
         if (existingIndex >= 0) {
             pixelCache[existingIndex] = { x, y, color };
@@ -63,6 +94,57 @@ if (!canvasApp || !canvas) {
         }
         drawPixel(x, y, color);
     });
+
+    // Helper function to show connection status
+    function showConnectionStatus(message, isConnected) {
+        let statusDiv = document.getElementById('signalrStatus');
+        if (!statusDiv) {
+            statusDiv = document.createElement('div');
+            statusDiv.id = 'signalrStatus';
+            statusDiv.style.position = 'fixed';
+            statusDiv.style.top = '10px';
+            statusDiv.style.right = '10px';
+            statusDiv.style.padding = '10px 15px';
+            statusDiv.style.borderRadius = '8px';
+            statusDiv.style.fontSize = '12px';
+            statusDiv.style.fontWeight = 'bold';
+            statusDiv.style.zIndex = '10000';
+            statusDiv.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+            document.body.appendChild(statusDiv);
+        }
+        
+        statusDiv.textContent = `SignalR: ${message}`;
+        statusDiv.style.backgroundColor = isConnected ? '#28a745' : '#dc3545';
+        statusDiv.style.color = '#fff';
+        
+        // Auto-hide success message after 3 seconds
+        if (isConnected) {
+            setTimeout(() => {
+                if (statusDiv.textContent.includes('Connected')) {
+                    statusDiv.style.display = 'none';
+                }
+            }, 3000);
+        } else {
+            statusDiv.style.display = 'block';
+        }
+    }
+
+    // Test function to manually check SignalR (available in console)
+    window.testSignalR = function() {
+        console.log('🔍 Testing SignalR Connection...');
+        console.log('Connection State:', connection.state);
+        console.log('Connection ID:', connection.connectionId);
+        
+        if (connection.state === 'Connected') {
+            console.log('✅ SignalR is connected');
+            console.log('Sending test pixel...');
+            connection.invoke('DrawPixel', 'main', 50, 50, '#FF0000')
+                .then(() => console.log('✅ Test pixel sent successfully'))
+                .catch(err => console.error('❌ Failed to send test pixel:', err));
+        } else {
+            console.log('❌ SignalR is NOT connected. State:', connection.state);
+        }
+    };
 
     if (deleteModeBtn && addModeBtn && isAdmin) {
         deleteModeBtn.addEventListener('click', () => setMode('delete'));
@@ -663,6 +745,7 @@ if (!canvasApp || !canvas) {
         }
 
         const endpoint = isAdmin ? '/Admin/AddPixel' : '/Canvas/SavePixel';
+        console.log('🎨 Attempting to add pixel:', { x, y, color, endpoint });
 
         fetch(endpoint, {
             method: 'POST',
@@ -673,6 +756,7 @@ if (!canvasApp || !canvas) {
             body: JSON.stringify({ x, y, color })
         }).then(async response => {
             if (!response.ok) {
+                console.error('❌ Add pixel failed with status:', response.status);
                 if (!isAdmin && response.status === 400) {
                     const payload = await response.json().catch(() => null);
                     handleCooldown(payload);
@@ -681,8 +765,13 @@ if (!canvasApp || !canvas) {
                 throw new Error('Add pixel failed');
             }
 
+            console.log('✅ Pixel saved to database');
             drawPixel(x, y, color);
-            connection.invoke('DrawPixel', 'main', x, y, color);
+            
+            console.log('📤 Broadcasting pixel via SignalR...');
+            connection.invoke('DrawPixel', 'main', x, y, color)
+                .then(() => console.log('✅ SignalR broadcast successful'))
+                .catch(err => console.error('❌ SignalR broadcast failed:', err));
 
             if (!isAdmin) {
                 fetchCooldownStatus();
@@ -786,6 +875,107 @@ if (!canvasApp || !canvas) {
 
         const remainingSeconds = Math.ceil(remainingMs / 1000);
         cooldownStatus.textContent = `Cooldown active: wait ${remainingSeconds}s`;
+    }
+
+    // Image import functionality for admin
+    if (isAdmin) {
+        const selectImageBtn = document.getElementById('selectImageBtn');
+        const imageFileInput = document.getElementById('imageFileInput');
+        const imagePreviewSection = document.getElementById('imagePreviewSection');
+        const imagePreview = document.getElementById('imagePreview');
+        const startXInput = document.getElementById('startXInput');
+        const startYInput = document.getElementById('startYInput');
+        const maxWidthInput = document.getElementById('maxWidthInput');
+        const importImageBtn = document.getElementById('importImageBtn');
+        const cancelImageBtn = document.getElementById('cancelImageBtn');
+        const importStatus = document.getElementById('importStatus');
+
+        if (selectImageBtn && imageFileInput) {
+            selectImageBtn.addEventListener('click', () => {
+                imageFileInput.click();
+            });
+
+            imageFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        imagePreview.src = event.target.result;
+                        imagePreviewSection.style.display = 'block';
+                        importStatus.textContent = '';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        if (cancelImageBtn) {
+            cancelImageBtn.addEventListener('click', () => {
+                imagePreviewSection.style.display = 'none';
+                imageFileInput.value = '';
+                importStatus.textContent = '';
+            });
+        }
+
+        if (importImageBtn) {
+            importImageBtn.addEventListener('click', async () => {
+                const file = imageFileInput.files[0];
+                if (!file) {
+                    importStatus.textContent = 'Please select an image first';
+                    importStatus.style.color = 'red';
+                    return;
+                }
+
+                const startX = parseInt(startXInput.value) || 0;
+                const startY = parseInt(startYInput.value) || 0;
+                const maxWidth = parseInt(maxWidthInput.value) || 50;
+
+                const formData = new FormData();
+                formData.append('imageFile', file);
+                formData.append('startX', startX);
+                formData.append('startY', startY);
+                formData.append('maxWidth', maxWidth);
+
+                const token = getCsrfToken();
+
+                importStatus.textContent = 'Importing image...';
+                importStatus.style.color = '#007bff';
+                importImageBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/Admin/ImportImage', {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': token
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        importStatus.textContent = `✓ Success! ${result.pixelsAdded} pixels imported (${result.width}x${result.height})`;
+                        importStatus.style.color = '#28a745';
+                        
+                        // Reload canvas to show the imported image
+                        setTimeout(() => {
+                            loadCanvas();
+                            imagePreviewSection.style.display = 'none';
+                            imageFileInput.value = '';
+                        }, 2000);
+                    } else {
+                        importStatus.textContent = `✗ Error: ${result.message}`;
+                        importStatus.style.color = 'red';
+                    }
+                } catch (error) {
+                    console.error('Import image failed:', error);
+                    importStatus.textContent = '✗ Error importing image';
+                    importStatus.style.color = 'red';
+                } finally {
+                    importImageBtn.disabled = false;
+                }
+            });
+        }
     }
 
     setMode('add');
