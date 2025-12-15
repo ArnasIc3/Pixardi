@@ -145,6 +145,14 @@
             </button>
         </div>
     }
+    else
+    {
+        <div class="project-controls">
+            <div class="auth-message">
+                <p>Please <a href="@Url.Action("Login", "Account")">login</a> to access all features</p>
+            </div>
+        </div>
+    }
 </div>
 
 @section Scripts {

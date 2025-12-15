@@ -66,6 +66,7 @@
         var isHomePage = controller?.Equals("Home", StringComparison.OrdinalIgnoreCase) == true && action?.Equals("Index",
         StringComparison.OrdinalIgnoreCase) == true;
         var isGalleryPage = controller?.Equals("Gallery", StringComparison.OrdinalIgnoreCase) == true;
+        var isCanvasPage = controller?.Equals("Canvas", StringComparison.OrdinalIgnoreCase) == true;
         var isAccountPage = controller?.Equals("Account", StringComparison.OrdinalIgnoreCase) == true;
     }
 
@@ -74,41 +75,59 @@
         <nav class="main-nav">
             @if (isGalleryPage)
             {
-                <!-- On Gallery page - only show Editor button -->
+                <!-- On Gallery page - show Editor and Canvas buttons -->
                 <a href="@Url.Action("Index", "Home")" class="nav-link editor-link">
                     Editor
+                </a>
+                <a href="@Url.Action("Index", "Canvas")" class="nav-link canvas-link">
+                    Canvas
+                </a>
+            }
+            else if (isCanvasPage)
+            {
+                <!-- On Canvas page - show Editor and Gallery buttons -->
+                <a href="@Url.Action("Index", "Home")" class="nav-link editor-link">
+                    Editor
+                </a>
+                <a href="@Url.Action("Index", "Gallery")" class="nav-link gallery-link">
+                    Gallery
                 </a>
             }
             else
             {
-                <!-- On Home page or other pages - show Gallery button -->
+                <!-- On Home page - show Gallery and Canvas buttons -->
                 <a href="@Url.Action("Index", "Gallery")" class="nav-link gallery-link">
                     Gallery
+                </a>
+                <a href="@Url.Action("Index", "Canvas")" class="nav-link canvas-link">
+                    Canvas
                 </a>
             }
         </nav>
     }
 
     <!-- Authentication Navigation -->
-    <nav class="auth-nav">
-        @if (User.Identity?.IsAuthenticated == true)
-        {
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <nav class="auth-nav">
             <div class="user-info">
-                <span>Welcome, @(ViewData["UserDisplayName"] ?? User.Identity.Name) !</span>
+                <span> @(ViewData["UserDisplayName"] ?? User.Identity.Name)</span>
                 <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="auth-btn logout-btn">Logout</button>
                 </form>
             </div>
-        }
-        else
-        {
+        </nav>
+    }
+    else if (!isCanvasPage)
+    {
+        <nav class="auth-nav">
             <div class="auth-buttons">
                 <a asp-controller="Account" asp-action="Login" class="auth-btn login-btn">Login</a>
                 <a asp-controller="Account" asp-action="Register" class="auth-btn register-btn">Register</a>
             </div>
-        }
-    </nav>
+        </nav>
+    }
 
     <!-- Modal Overlays -->
     <div id="modalOverlay" class="modal-overlay">

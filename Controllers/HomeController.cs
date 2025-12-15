@@ -23,7 +23,7 @@ namespace Pixardi.Controllers
                     // Use DisplayName if available, otherwise fall back to email
                     ViewData["UserDisplayName"] = !string.IsNullOrEmpty(user.DisplayName)
                         ? user.DisplayName
-                        : user.Email?.Split('@')[0]; // Use part before @ if no display name
+                        : user.Email?.Split('@')[0]; 
                 }
             }
 

@@ -2,10 +2,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Pixardi.Data;
 using Pixardi.Models;
+using Pixardi.Hubs;
+using SixLabors.ImageSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSignalR();
 
 // Register EF DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -24,7 +28,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 
 var app = builder.Build();
 
-// Test database connection
+// Test database connection and create initial admin
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -59,6 +63,9 @@ using (var scope = app.Services.CreateScope())
         var userCount = context.Users.Count();
         Console.WriteLine($"Current user count: {userCount}");
 
+        // Create initial admin user
+        await CreateInitialAdmin(userManager);
+
     }
     catch (Exception ex)
     {
@@ -88,6 +95,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<DrawingHub>("/drawingHub");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -95,3 +104,64 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
+// Admin seeder method
+static async Task CreateInitialAdmin(UserManager<ApplicationUser> userManager)
+{
+    var adminEmail = "admin@admin.com";
+    var adminPassword = "adminadmin";
+
+    Console.WriteLine("Checking for admin user...");
+
+    var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
+    if (existingAdmin == null)
+    {
+        Console.WriteLine("Creating initial admin user...");
+        var adminUser = new ApplicationUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true,
+            IsAdmin = true
+        };
+
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+        if (result.Succeeded)
+        {
+            Console.WriteLine($"✅ Admin user created successfully: {adminEmail}");
+            Console.WriteLine($"🔑 Admin password: {adminPassword}");
+            Console.WriteLine($"🔗 Admin panel: /Admin/Canvas");
+        }
+        else
+        {
+            Console.WriteLine($"❌ Failed to create admin user:");
+            foreach (var error in result.Errors)
+            {
+                Console.WriteLine($"   - {error.Description}");
+            }
+        }
+    }
+    else
+    {
+        Console.WriteLine($"Admin user already exists: {adminEmail}");
+
+        // Ensure existing user has admin rights
+        if (!existingAdmin.IsAdmin)
+        {
+            existingAdmin.IsAdmin = true;
+            var updateResult = await userManager.UpdateAsync(existingAdmin);
+            if (updateResult.Succeeded)
+            {
+                Console.WriteLine($"✅ Existing user {adminEmail} promoted to admin");
+            }
+            else
+            {
+                Console.WriteLine($"❌ Failed to promote existing user to admin");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"✅ User {adminEmail} already has admin privileges");
+        }
+    }
+}

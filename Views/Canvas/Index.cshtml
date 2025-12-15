@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "Canvas";
+}
+
+<link rel="stylesheet" href="~/css/canvas.css" asp-append-version="true" />
+
+<div class="container-fluid" id="canvasApp" data-is-admin="false">
+    <div class="canvas-header">
+        <div class="canvas-title-stack">
+            <span class="canvas-eyebrow">Live pixel wall</span>
+            <h1 class="canvas-title">Community Canvas</h1>
+            <p class="canvas-subtitle">Place pixels with everyone else in real time! </p>
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <div class="auth-banner">
+                    <div class="auth-banner-text">
+                        <strong>Guest mode</strong>
+                        <span>Sign in to save projects and participate in the public canvas.</span>
+                    </div>
+                    <div class="auth-banner-actions">
+                        <a class="banner-btn primary" href="@Url.Action("Login", "Account")">Sign in</a>
+                        <a class="banner-btn ghost" href="@Url.Action("Register", "Account")">Create account</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="canvas-layout">
+        <div class="canvas-sidebar">
+            <h2 class="canvas-eyebrow">Color Picker</h2>
+            <div class="color-wheel-meta">
+                <span id="colorHex">#000000</span>
+            </div>
+
+            <div class="color-wheel-wrapper">
+                <div class="color-wheel-visual">
+                    <canvas id="colorWheelCanvas" width="360" height="360" aria-label="Color selection wheel"></canvas>
+                </div>
+            </div>
+
+            <div class="color-info">
+                <p>Current Color</p>
+                <span id="currentColor" class="current-color-display"></span>
+            </div>
+
+            <div class="mode-info">
+                <p>Mode: <span id="currentMode">Add</span></p>
+                <small>Place one pixel every 30 seconds.</small>
+            </div>
+        </div>
+
+        <div class="canvas-main">
+            <div class="canvas-controls">
+                <button type="button" id="zoomInBtn" class="zoom-btn">+</button>
+                <button type="button" id="zoomResetBtn" class="zoom-btn">Reset</button>
+                <button type="button" id="zoomOutBtn" class="zoom-btn">-</button>
+            </div>
+            <div class="canvas-container">
+                <canvas id="drawingCanvas" width="1000" height="600"></canvas>
+            </div>
+
+            <div class="cooldown-status" id="cooldownStatus" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<form>
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script src="https://unpkg.com/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script src="~/js/canvas.js" asp-append-version="true"></script>
+}
