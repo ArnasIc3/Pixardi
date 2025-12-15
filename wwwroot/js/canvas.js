@@ -48,31 +48,31 @@ if (!canvasApp || !canvas) {
 
     // SignalR connection status monitoring
     connection.onclose((error) => {
-        console.error('❌ SignalR connection closed', error);
+        console.error('SignalR connection closed', error);
         showConnectionStatus('Disconnected', false);
     });
 
     connection.onreconnecting((error) => {
-        console.warn('🔄 SignalR reconnecting...', error);
+        console.warn('SignalR reconnecting...', error);
         showConnectionStatus('Reconnecting...', false);
     });
 
     connection.onreconnected((connectionId) => {
-        console.log('✅ SignalR reconnected', connectionId);
+        console.log('SignalR reconnected', connectionId);
         showConnectionStatus('Connected', true);
         connection.invoke('JoinCanvas', 'main');
     });
 
     connection.start()
         .then(() => {
-            console.log('✅ SignalR connection established');
+            console.log('SignalR connection established');
             console.log('Connection ID:', connection.connectionId);
             console.log('Connection State:', connection.state);
             showConnectionStatus('Connected', true);
             
             connection.invoke('JoinCanvas', 'main')
-                .then(() => console.log('✅ Joined canvas group'))
-                .catch(err => console.error('❌ Failed to join canvas:', err));
+                .then(() => console.log('Joined canvas group'))
+                .catch(err => console.error('Failed to join canvas:', err));
             
             loadCanvas();
             if (!isAdmin) {
@@ -80,12 +80,12 @@ if (!canvasApp || !canvas) {
             }
         })
         .catch(err => {
-            console.error('❌ SignalR connection failed: ', err);
+            console.error('SignalR connection failed: ', err);
             showConnectionStatus('Connection Failed', false);
         });
 
     connection.on('PixelDrawn', (x, y, color) => {
-        console.log('📨 Received PixelDrawn event:', { x, y, color });
+        console.log('----Received PixelDrawn event:', { x, y, color });
         const existingIndex = pixelCache.findIndex(p => p.x === x && p.y === y);
         if (existingIndex >= 0) {
             pixelCache[existingIndex] = { x, y, color };
@@ -131,7 +131,7 @@ if (!canvasApp || !canvas) {
 
     // Test function to manually check SignalR (available in console)
     window.testSignalR = function() {
-        console.log('🔍 Testing SignalR Connection...');
+        console.log('Testing SignalR Connection...');
         console.log('Connection State:', connection.state);
         console.log('Connection ID:', connection.connectionId);
         
@@ -139,10 +139,10 @@ if (!canvasApp || !canvas) {
             console.log('✅ SignalR is connected');
             console.log('Sending test pixel...');
             connection.invoke('DrawPixel', 'main', 50, 50, '#FF0000')
-                .then(() => console.log('✅ Test pixel sent successfully'))
-                .catch(err => console.error('❌ Failed to send test pixel:', err));
+                .then(() => console.log('Test pixel sent successfully'))
+                .catch(err => console.error('Failed to send test pixel:', err));
         } else {
-            console.log('❌ SignalR is NOT connected. State:', connection.state);
+            console.log('SignalR is NOT connected. State:', connection.state);
         }
     };
 
@@ -745,7 +745,7 @@ if (!canvasApp || !canvas) {
         }
 
         const endpoint = isAdmin ? '/Admin/AddPixel' : '/Canvas/SavePixel';
-        console.log('🎨 Attempting to add pixel:', { x, y, color, endpoint });
+        console.log('Attempting to add pixel:', { x, y, color, endpoint });
 
         fetch(endpoint, {
             method: 'POST',
@@ -756,7 +756,7 @@ if (!canvasApp || !canvas) {
             body: JSON.stringify({ x, y, color })
         }).then(async response => {
             if (!response.ok) {
-                console.error('❌ Add pixel failed with status:', response.status);
+                console.error('Add pixel failed with status:', response.status);
                 if (!isAdmin && response.status === 400) {
                     const payload = await response.json().catch(() => null);
                     handleCooldown(payload);
@@ -765,13 +765,13 @@ if (!canvasApp || !canvas) {
                 throw new Error('Add pixel failed');
             }
 
-            console.log('✅ Pixel saved to database');
+            console.log('Pixel saved to database');
             drawPixel(x, y, color);
             
-            console.log('📤 Broadcasting pixel via SignalR...');
+            console.log('Broadcasting pixel via SignalR...');
             connection.invoke('DrawPixel', 'main', x, y, color)
-                .then(() => console.log('✅ SignalR broadcast successful'))
-                .catch(err => console.error('❌ SignalR broadcast failed:', err));
+                .then(() => console.log('SignalR broadcast successful'))
+                .catch(err => console.error('SignalR broadcast failed:', err));
 
             if (!isAdmin) {
                 fetchCooldownStatus();
